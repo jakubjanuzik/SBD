@@ -2,6 +2,8 @@ import psycopg2
 from flask import request, g
 from app import app
 
+from flask import render_template
+
 
 @app.before_request
 def connect_to_db():
@@ -22,4 +24,4 @@ def disconnect_from_db(exception):
 def hello():
     if request.method == 'POST':
         return 'Hello POST'
-    return 'Hello'
+    return render_template('index.html')
