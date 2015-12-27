@@ -2,6 +2,7 @@ from flask.ext.script import Manager, Server
 
 from app import app
 
+app.config.from_object('app.config')
 manager = Manager(app)
 
 manager.add_command(
