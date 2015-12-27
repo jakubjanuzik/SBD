@@ -4,6 +4,8 @@ DATABASE_CREDENTIALS = {
     'user': 'kuba',
 }
 
+WTF_CSRF_ENABLED = True
+
 try:
     from dev_config import *
 except Exception, e:
