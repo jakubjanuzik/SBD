@@ -20,6 +20,5 @@ def login():
 
 @users.route('/logout', methods=['GET'])
 def logout():
-    if session['user'] is not None:
-        session['user'] = None
+    session.pop('user', None)
     return redirect(url_for('users.login'))

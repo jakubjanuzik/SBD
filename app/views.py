@@ -6,6 +6,7 @@ from flask import render_template, session
 from users.models import get_user_by_id
 from app.decorators import login_required
 
+
 @app.before_request
 def connect_to_db():
     g.db = psycopg2.connect(
@@ -17,11 +18,10 @@ def connect_to_db():
 
 @app.before_request
 def load_user():
-    if session["user"]:
-        user = get_user_by_id
+    if 'user' in session:
+        user = get_user_by_id(session['user'])
     else:
         user = None  # Make it better, use an anonymous User instead
-
     g.user = user
 
 
