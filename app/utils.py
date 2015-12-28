@@ -27,7 +27,9 @@ def select_all_from_table(tablename):
 def run_custom_query(querystring):
     cursor = getattr(g, 'db', None).cursor()
     cursor.execute(querystring)
+    data = cursor.fetchall()
     cursor.close()
+    return data
 
 
 def select_fields_from_table_by_ids(tablename, fields, ids_list):
