@@ -1,7 +1,8 @@
 from . import users
 from flask import render_template, request, session, url_for, redirect, flash
-from .models import check_auth
 from .forms import LoginForm
+
+from app.utils import check_auth
 
 
 @users.route('/login', methods=['GET', 'POST'])
@@ -9,8 +10,8 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = check_auth(request.form['username'], request.form['password'])
-        if user is not None:
-            session['user'] = user.id
+        if user:
+            session['user'] = user.user_id
             return redirect(url_for('index'))
         else:
             flash('Invalid login credentials', 'error')

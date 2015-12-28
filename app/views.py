@@ -3,8 +3,9 @@ from flask import request, g
 from app import app
 from psycopg2.extras import NamedTupleCursor
 from flask import render_template, session
-from users.models import get_user_by_id
 from app.decorators import login_required
+from app.utils import get_user_by_id
+
 
 @app.before_request
 def connect_to_db():
@@ -17,8 +18,9 @@ def connect_to_db():
 
 @app.before_request
 def load_user():
-    if session["user"]:
-        user = get_user_by_id
+    user_id = session.get('user')
+    if user_id:
+        user = get_user_by_id(user_id)
     else:
         user = None  # Make it better, use an anonymous User instead
 
