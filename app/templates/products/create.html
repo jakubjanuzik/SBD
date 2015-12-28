@@ -26,11 +26,11 @@
                   {{ form.description(class="form-control")}}
                 </div>
                 <div class="form-group">
-                  <label for="exampleInputFile">{{ form.image.label }}</label>
-                 {{ form.image(class="form-control") }}
-                 {% if form.image.errors %}
+                  <label for="exampleInputFile">{{ form.images.label }}</label>
+                 {{ form.images(class="form-control", multiple="") }}
+                 {% if form.images.errors %}
                     <ul class=errors>
-                    {% for error in form.image.errors  %}
+                    {% for error in form.images.errors  %}
                       <li>{{ error }}</li>
                     {% endfor %}
                     </ul>

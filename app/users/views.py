@@ -11,7 +11,7 @@ def login():
     if form.validate_on_submit():
         user = check_auth(request.form['username'], request.form['password'])
         if user:
-            session['user'] = user.user_id
+            session['user'] = user.id
             return redirect(url_for('index'))
         else:
             flash('Invalid login credentials', 'error')

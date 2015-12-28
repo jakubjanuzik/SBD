@@ -2,9 +2,10 @@ import psycopg2
 from flask import request, g
 from app import app
 from psycopg2.extras import NamedTupleCursor
-from flask import render_template, session
+from flask import render_template, session, send_file
 from app.decorators import login_required
 from app.utils import get_user_by_id
+import os.path
 
 
 @app.before_request
@@ -40,3 +41,9 @@ def index():
     if request.method == 'POST':
         return 'Hello POST'
     return render_template('index.html')
+
+
+@app.route('/image/<path>', methods=['GET'])
+@login_required
+def image(path):
+    return send_file(os.path.join('media/images', path))

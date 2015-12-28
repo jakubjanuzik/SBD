@@ -8,14 +8,14 @@ from wtforms.validators import DataRequired
 # from werkzeug import secure_filename
 
 from app import app
-
+from flask import abort
 
 class ProductForm(Form):
     name = StringField('Product Name', validators=[DataRequired()])
     description = TextAreaField(
         'Product description', validators=[DataRequired()]
     )
-    image = FileField('Image File')
+    images = FileField('Image File')
     price = DecimalField('Product price', places=2)
 
     def validate_price(form, field):
@@ -28,6 +28,16 @@ class ProductForm(Form):
                 field.data.filename.endswith(app.config['ALLOWED_IMAGES_EXT'])
             ):
                 raise ValidationError('Incorrect image extension')
+
+    def prepopulate_data(form, data):
+        try:
+            form.name.data = data.name
+            form.price.data = data.price
+            form.description.data = data.description
+        except Exception, e:
+            abort(500)
+        
+
 
     # def upload_image(form, field):
     #     filename = secure_filename(form.image.data.filename)

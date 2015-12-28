@@ -9,7 +9,8 @@ DATABASE_CREDENTIALS = {
 WTF_CSRF_ENABLED = True
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 ALLOWED_IMAGES_EXT = ('.png', '.jpg', '.jpeg')
-IMAGE_UPLOAD_PATH = os.path.join(BASE_PATH, 'assets')
+IMAGE_PATH = 'media/images'
+IMAGE_UPLOAD_PATH = os.path.join(BASE_PATH, 'media/images')
 
 try:
     from dev_config import *

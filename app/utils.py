@@ -12,8 +12,27 @@ def insert_into_table(tablename, values):
     cursor = conn.cursor()
     columns = list(values.keys())  # needed in Py3
     values = [values[column] for column in columns]
-    insert_statement = 'insert into {} (%s) values %s'.format(tablename)
+    insert_statement = 'insert into {} (%s) values %s RETURNING id'.format(tablename)
     cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
+    id_of_new_row = cursor.fetchone()[0]
+    conn.commit()
+    cursor.close()
+    return id_of_new_row
+
+def update(tablename, where, values):
+    """
+    Inserts data into given tablename, inspirated from Stack Overflow :-)
+    """
+    conn = getattr(g, 'db', None)
+    cursor = conn.cursor()
+    columns = list(values.keys())  # needed in Py3
+    sql = """UPDATE {}
+    SET {}
+    WHERE {};""".format(
+        tablename, 
+        ', '.join('{}=\'{}\''.format(k, values[k]) for k in values), 
+        ', '.join('{}=\'{}\''.format(k, where[k]) for k in where))
+    cursor.execute(sql)
     conn.commit()
     cursor.close()
 
@@ -44,12 +63,16 @@ def select_all_from_table(tablename):
     return data
 
 
-def run_custom_query(querystring):
-    cursor = getattr(g, 'db', None).cursor()
+def run_custom_query(querystring, fetch=True):
+    conn = getattr(g, 'db', None)
+    cursor = conn.cursor()
     cursor.execute(querystring)
-    data = cursor.fetchall()
+    if fetch:
+        data = cursor.fetchall()
+    conn.commit()
     cursor.close()
-    return data
+    if fetch:
+        return data
 
 
 def select_row_from_table_by_id(tablename, row_id):
@@ -100,7 +123,7 @@ def check_auth(username, password):
 def get_user_by_id(id):
     data = run_custom_query(
         """SELECT * FROM users
-        WHERE user_id = \'{}\'"""
+        WHERE id = \'{}\'"""
         .format(id)
     )
 
