@@ -6,11 +6,13 @@ def insert_into_table(tablename, values):
     """
     Inserts data into given tablename, inspirated from Stack Overflow :-)
     """
-    cursor = getattr(g, 'db', None).cursor()
+    conn = getattr(g, 'db', None)
+    cursor = conn.cursor()
     columns = list(values.keys())  # needed in Py3
     values = [values[column] for column in columns]
     insert_statement = 'insert into {} (%s) values %s'.format(tablename)
     cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
+    conn.commit()
     cursor.close()
 
 
@@ -34,10 +36,10 @@ def select_fields_from_table_by_ids(tablename, fields, ids_list):
 
     cursor = getattr(g, 'db', None).cursor()
     fields_string = ', '.join(fields)
-    select_statement = 'SELECT %s FROM {} WHERE id = ANY(%s);'.format(
-        tablename
+    select_statement = 'SELECT {} FROM {} WHERE id = ANY(%s);'.format(
+        fields_string, tablename
     )
-    cursor.execute(select_statement, fields_string, ids_list)
-    data = cursor.fetchone()
+    cursor.execute(select_statement, (ids_list, ))
+    data = cursor.fetchall()
     cursor.close()
     return data
