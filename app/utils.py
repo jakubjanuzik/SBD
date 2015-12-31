@@ -1,5 +1,12 @@
+import os.path
+import hashlib
+import uuid
+import psycopg2
 from psycopg2.extensions import AsIs
 from flask import g
+from werkzeug import secure_filename
+
+from app import app
 
 
 def insert_into_table(tablename, values):
@@ -8,6 +15,45 @@ def insert_into_table(tablename, values):
     """
     conn = getattr(g, 'db', None)
     cursor = conn.cursor()
+    columns = list(values.keys())  # needed in Py3
+    values = [values[column] for column in columns]
+    insert_statement = 'insert into {} (%s) values %s RETURNING id'.format(
+       tablename
+    )
+    cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
+    id_of_new_row = cursor.fetchone()[0]
+    conn.commit()
+    cursor.close()
+    return id_of_new_row
+
+
+def update(tablename, where, values):
+    """
+    Inserts data into given tablename, inspirated from Stack Overflow :-)
+    """
+    conn = getattr(g, 'db', None)
+    cursor = conn.cursor()
+    sql = """UPDATE {}
+    SET {}
+    WHERE {};""".format(
+        tablename,
+        ', '.join('{}=\'{}\''.format(k, values[k]) for k in values),
+        ', '.join('{}=\'{}\''.format(k, where[k]) for k in where))
+    cursor.execute(sql)
+    conn.commit()
+    cursor.close()
+
+
+def insert_into_table_with_image(tablename, values):
+    """
+    Inserts data into given tablename, expects image to be under 'image' key
+    """
+    conn = getattr(g, 'db', None)
+    cursor = conn.cursor()
+    if values['image'].filename:
+        values['image'] = psycopg2.Binary(values['image'].stream.read())
+    else:
+        values.pop('image')
     columns = list(values.keys())  # needed in Py3
     values = [values[column] for column in columns]
     insert_statement = 'insert into {} (%s) values %s'.format(tablename)
@@ -24,10 +70,27 @@ def select_all_from_table(tablename):
     return data
 
 
-def run_custom_query(querystring):
-    cursor = getattr(g, 'db', None).cursor()
+def run_custom_query(querystring, fetch=True):
+    conn = getattr(g, 'db', None)
+    cursor = conn.cursor()
     cursor.execute(querystring)
+    if fetch:
+        data = cursor.fetchall()
+    conn.commit()
     cursor.close()
+    if fetch:
+        return data
+
+
+def select_row_from_table_by_id(tablename, row_id):
+    cursor = getattr(g, 'db', None).cursor()
+    select_statement = 'SELECT * FROM {} WHERE id = %s;'.format(
+        tablename
+    )
+    cursor.execute(select_statement, (row_id, ))
+    data = cursor.fetchall()
+    cursor.close()
+    return data
 
 
 def select_fields_from_table_by_ids(tablename, fields, ids_list):
@@ -43,3 +106,56 @@ def select_fields_from_table_by_ids(tablename, fields, ids_list):
     data = cursor.fetchall()
     cursor.close()
     return data
+
+
+def check_auth(username, password):
+    m = hashlib.md5()
+    # In Py3 it's an unicode and must be encoded to be string/byte type.
+    password = password.encode('utf-8')
+    m.update(password)
+    hashpass = m.hexdigest()
+    data = run_custom_query(
+        """SELECT * FROM users
+        WHERE username = \'{}\'
+        AND password = \'{}\'"""
+        .format(username, hashpass)
+    )
+
+    if not data:
+        return None
+    else:
+        return data[0]
+
+
+def get_user_by_id(id):
+    data = run_custom_query(
+        """SELECT * FROM users
+        WHERE id = \'{}\'"""
+        .format(id)
+    )
+
+    if not data:
+        return None
+    else:
+        return data[0]
+
+
+def save_image(image, product_id):
+    filename = secure_filename(image.filename)
+    img_data = {
+        "filename": '{}-{}'.format(
+            hashlib.md5(
+                str(uuid.uuid4()).encode('utf-8')
+            ).hexdigest(),
+            image.filename
+        ),
+        "caption": filename,
+        "product_id": product_id,
+    }
+    image.save(
+        os.path.join(
+            app.config["IMAGE_UPLOAD_PATH"],
+            img_data["filename"]
+        )
+    )
+    insert_into_table('product_images', img_data)
