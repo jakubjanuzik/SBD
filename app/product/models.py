@@ -10,8 +10,7 @@ def get_product_main_image(id):
 
     if not images:
         return None
-    else:
-        return images[0]
+    return images[0]
 
 
 def get_product_images(id):

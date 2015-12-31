@@ -1,7 +1,12 @@
+import os.path
 import hashlib
+import uuid
 import psycopg2
 from psycopg2.extensions import AsIs
 from flask import g
+from werkzeug import secure_filename
+
+from app import app
 
 
 def insert_into_table(tablename, values):
@@ -12,12 +17,15 @@ def insert_into_table(tablename, values):
     cursor = conn.cursor()
     columns = list(values.keys())  # needed in Py3
     values = [values[column] for column in columns]
-    insert_statement = 'insert into {} (%s) values %s RETURNING id'.format(tablename)
+    insert_statement = 'insert into {} (%s) values %s RETURNING id'.format(
+       tablename
+    )
     cursor.execute(insert_statement, (AsIs(','.join(columns)), tuple(values)))
     id_of_new_row = cursor.fetchone()[0]
     conn.commit()
     cursor.close()
     return id_of_new_row
+
 
 def update(tablename, where, values):
     """
@@ -25,12 +33,11 @@ def update(tablename, where, values):
     """
     conn = getattr(g, 'db', None)
     cursor = conn.cursor()
-    columns = list(values.keys())  # needed in Py3
     sql = """UPDATE {}
     SET {}
     WHERE {};""".format(
-        tablename, 
-        ', '.join('{}=\'{}\''.format(k, values[k]) for k in values), 
+        tablename,
+        ', '.join('{}=\'{}\''.format(k, values[k]) for k in values),
         ', '.join('{}=\'{}\''.format(k, where[k]) for k in where))
     cursor.execute(sql)
     conn.commit()
@@ -131,3 +138,24 @@ def get_user_by_id(id):
         return None
     else:
         return data[0]
+
+
+def save_image(image, product_id):
+    filename = secure_filename(image.filename)
+    img_data = {
+        "filename": '{}-{}'.format(
+            hashlib.md5(
+                str(uuid.uuid4()).encode('utf-8')
+            ).hexdigest(),
+            image.filename
+        ),
+        "caption": filename,
+        "product_id": product_id,
+    }
+    image.save(
+        os.path.join(
+            app.config["IMAGE_UPLOAD_PATH"],
+            img_data["filename"]
+        )
+    )
+    insert_into_table('product_images', img_data)

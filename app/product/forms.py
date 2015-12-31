@@ -10,6 +10,7 @@ from wtforms.validators import DataRequired
 from app import app
 from flask import abort
 
+
 class ProductForm(Form):
     name = StringField('Product Name', validators=[DataRequired()])
     description = TextAreaField(
@@ -34,15 +35,5 @@ class ProductForm(Form):
             form.name.data = data.name
             form.price.data = data.price
             form.description.data = data.description
-        except Exception, e:
+        except TypeError:
             abort(500)
-        
-
-
-    # def upload_image(form, field):
-    #     filename = secure_filename(form.image.data.filename)
-    #     form.image.data.save(
-    #         os.path.join(
-    #             app.config['IMAGE_UPLOAD_PATH'], filename
-    #         )
-    #     )
