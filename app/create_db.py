@@ -1,5 +1,4 @@
 from flask.ext.script import Command
-import psycopg2
 
 
 class CreateDB(Command):
@@ -7,4 +6,4 @@ class CreateDB(Command):
 
     def run(self):
         print("hello world")
-        # TO be filled with creation script
+        # TO be filled with creation script can be done later on
