@@ -13,6 +13,6 @@ IMAGE_PATH = 'media/images'
 IMAGE_UPLOAD_PATH = os.path.join(BASE_PATH, 'media/images')
 
 try:
-    from dev_config import *
+    from app.dev_config import *
 except Exception as e:
     pass
