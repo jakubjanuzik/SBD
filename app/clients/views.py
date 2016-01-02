@@ -22,6 +22,8 @@ def edit(client_id):
     client = get_client(client_id)
     form = UserForm(obj=client)
     if form.validate_on_submit():
+        form.populate_obj(client)
+        import ipdb; ipdb.set_trace()
         edit_client(form, client_id)
         redirect(url_for('clients.list'))
     return render_template('clients/create.html', form=form)
