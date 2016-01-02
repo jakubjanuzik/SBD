@@ -3,7 +3,7 @@ import hashlib
 import uuid
 import psycopg2
 from psycopg2.extensions import AsIs
-from flask import g
+from flask import g, abort
 from werkzeug import secure_filename
 
 from app import app
@@ -27,10 +27,11 @@ def insert_into_table(tablename, values):
     return id_of_new_row
 
 
+def insert(tablename, values):
+    return insert_into_table(tablename, values)
+
+
 def update(tablename, where, values):
-    """
-    Inserts data into given tablename, inspirated from Stack Overflow :-)
-    """
     conn = getattr(g, 'db', None)
     cursor = conn.cursor()
     sql = """UPDATE {}
@@ -90,6 +91,30 @@ def select_row_from_table_by_id(tablename, row_id):
     cursor.execute(select_statement, (row_id, ))
     data = cursor.fetchall()
     cursor.close()
+    return data
+
+
+def select(tablename, where):
+    conn = getattr(g, 'db', None)
+    cursor = conn.cursor()
+    sql = """SELECT * FROM {}
+    WHERE {};""".format(
+        tablename,
+        ' AND '.join('{}=\'{}\''.format(k, where[k]) for k in where))
+    cursor.execute(sql)
+    data = cursor.fetchall()
+    conn.commit()
+    cursor.close()
+    return data
+
+
+def select_one_or_404(tablename, where):
+    data = select(tablename, where)
+    try:
+        data = data[0]
+    except IndexError:
+        abort(404)
+
     return data
 
 
