@@ -50,12 +50,6 @@ def list():
 def delete(client_id):
     try:
         run_custom_query(
-            """DELETE FROM CLIENT_PHONES WHERE client_id = {}""".format(
-                client_id
-            ),
-            fetch=False
-        )
-        run_custom_query(
             """DELETE FROM CLIENTS WHERE ID = {}""".format(client_id),
             fetch=False
         )

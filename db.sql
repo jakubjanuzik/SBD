@@ -4,7 +4,7 @@
 
 -- Dumped from database version 9.3.10
 -- Dumped by pg_dump version 9.3.10
--- Started on 2016-01-02 13:45:23 CET
+-- Started on 2016-01-03 14:42:00 CET
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 2042 (class 0 OID 0)
+-- TOC entry 2043 (class 0 OID 0)
 -- Dependencies: 180
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
 --
@@ -83,7 +83,7 @@ CREATE SEQUENCE client_phones_id_seq
 ALTER TABLE public.client_phones_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2043 (class 0 OID 0)
+-- TOC entry 2044 (class 0 OID 0)
 -- Dependencies: 178
 -- Name: client_phones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -122,7 +122,7 @@ CREATE SEQUENCE clients_id_seq
 ALTER TABLE public.clients_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2044 (class 0 OID 0)
+-- TOC entry 2045 (class 0 OID 0)
 -- Dependencies: 176
 -- Name: clients_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -183,7 +183,7 @@ CREATE SEQUENCE product_images_image_id_seq
 ALTER TABLE public.product_images_image_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2045 (class 0 OID 0)
+-- TOC entry 2046 (class 0 OID 0)
 -- Dependencies: 174
 -- Name: product_images_image_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -207,7 +207,7 @@ CREATE SEQUENCE product_product_id_seq
 ALTER TABLE public.product_product_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2046 (class 0 OID 0)
+-- TOC entry 2047 (class 0 OID 0)
 -- Dependencies: 172
 -- Name: product_product_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -245,7 +245,7 @@ CREATE SEQUENCE users_id_seq
 ALTER TABLE public.users_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2047 (class 0 OID 0)
+-- TOC entry 2048 (class 0 OID 0)
 -- Dependencies: 170
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
 --
@@ -294,35 +294,26 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regcl
 
 
 --
--- TOC entry 2034 (class 0 OID 41056)
+-- TOC entry 2035 (class 0 OID 41056)
 -- Dependencies: 179
 -- Data for Name: client_phones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
 COPY client_phones (id, phone, client_id) FROM stdin;
-1   123 6
-2   456 6
-3   456 6
-4   456 6
-5   456 6
-6   456 6
-7   456 6
-8   456 6
-9   456 6
 \.
 
 
 --
--- TOC entry 2048 (class 0 OID 0)
+-- TOC entry 2049 (class 0 OID 0)
 -- Dependencies: 178
 -- Name: client_phones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('client_phones_id_seq', 9, true);
+SELECT pg_catalog.setval('client_phones_id_seq', 366, true);
 
 
 --
--- TOC entry 2032 (class 0 OID 41045)
+-- TOC entry 2033 (class 0 OID 41045)
 -- Dependencies: 177
 -- Data for Name: clients; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -333,12 +324,11 @@ COPY clients (id, name, surname, email) FROM stdin;
 3   Damiian Blejwas damian.freedoom@gmail.com
 4   Damiian Blejwas damian.freedoom@gmail.com
 5   Damiian Blejwas damian.freedoom@gmail.com
-6   Damiian Blejwas damian.freedoom@gmail.com
 \.
 
 
 --
--- TOC entry 2049 (class 0 OID 0)
+-- TOC entry 2050 (class 0 OID 0)
 -- Dependencies: 176
 -- Name: clients_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -347,7 +337,7 @@ SELECT pg_catalog.setval('clients_id_seq', 6, true);
 
 
 --
--- TOC entry 2028 (class 0 OID 32770)
+-- TOC entry 2029 (class 0 OID 32770)
 -- Dependencies: 173
 -- Data for Name: product; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -363,7 +353,7 @@ COPY product (id, name, description, price, deleted, created_at, updated_at) FRO
 
 
 --
--- TOC entry 2030 (class 0 OID 32781)
+-- TOC entry 2031 (class 0 OID 32781)
 -- Dependencies: 175
 -- Data for Name: product_images; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -382,7 +372,7 @@ COPY product_images (id, filename, caption, default_image, created_at, updated_a
 
 
 --
--- TOC entry 2050 (class 0 OID 0)
+-- TOC entry 2051 (class 0 OID 0)
 -- Dependencies: 174
 -- Name: product_images_image_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -391,7 +381,7 @@ SELECT pg_catalog.setval('product_images_image_id_seq', 15, true);
 
 
 --
--- TOC entry 2051 (class 0 OID 0)
+-- TOC entry 2052 (class 0 OID 0)
 -- Dependencies: 172
 -- Name: product_product_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -400,7 +390,7 @@ SELECT pg_catalog.setval('product_product_id_seq', 21, true);
 
 
 --
--- TOC entry 2026 (class 0 OID 24586)
+-- TOC entry 2027 (class 0 OID 24586)
 -- Dependencies: 171
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
@@ -411,7 +401,7 @@ COPY users (id, username, password) FROM stdin;
 
 
 --
--- TOC entry 2052 (class 0 OID 0)
+-- TOC entry 2053 (class 0 OID 0)
 -- Dependencies: 170
 -- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
@@ -447,7 +437,7 @@ ALTER TABLE ONLY product_images
 
 
 --
--- TOC entry 1913 (class 2606 OID 41087)
+-- TOC entry 1914 (class 2606 OID 41087)
 -- Name: phone_id; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace:
 --
 
@@ -473,6 +463,14 @@ CREATE INDEX description ON product USING btree (description);
 
 
 --
+-- TOC entry 1912 (class 1259 OID 49236)
+-- Name: fki_client_id; Type: INDEX; Schema: public; Owner: postgres; Tablespace:
+--
+
+CREATE INDEX fki_client_id ON client_phones USING btree (client_id);
+
+
+--
 -- TOC entry 1905 (class 1259 OID 32800)
 -- Name: name; Type: INDEX; Schema: public; Owner: postgres; Tablespace:
 --
@@ -481,7 +479,7 @@ CREATE INDEX name ON product USING btree (name);
 
 
 --
--- TOC entry 1917 (class 2620 OID 32793)
+-- TOC entry 1918 (class 2620 OID 32793)
 -- Name: update_ab_changetimestamp; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -489,7 +487,7 @@ CREATE TRIGGER update_ab_changetimestamp BEFORE UPDATE ON product_images FOR EAC
 
 
 --
--- TOC entry 1916 (class 2620 OID 32833)
+-- TOC entry 1917 (class 2620 OID 32833)
 -- Name: update_ab_changetimestamp; Type: TRIGGER; Schema: public; Owner: postgres
 --
 
@@ -497,16 +495,16 @@ CREATE TRIGGER update_ab_changetimestamp BEFORE UPDATE ON product FOR EACH ROW E
 
 
 --
--- TOC entry 1915 (class 2606 OID 41095)
+-- TOC entry 1916 (class 2606 OID 49237)
 -- Name: client_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
 ALTER TABLE ONLY client_phones
-    ADD CONSTRAINT client_id FOREIGN KEY (client_id) REFERENCES clients(id);
+    ADD CONSTRAINT client_id FOREIGN KEY (client_id) REFERENCES clients(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
--- TOC entry 1914 (class 2606 OID 32794)
+-- TOC entry 1915 (class 2606 OID 32794)
 -- Name: product_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -515,7 +513,7 @@ ALTER TABLE ONLY product_images
 
 
 --
--- TOC entry 2041 (class 0 OID 0)
+-- TOC entry 2042 (class 0 OID 0)
 -- Dependencies: 5
 -- Name: public; Type: ACL; Schema: -; Owner: postgres
 --
@@ -526,7 +524,7 @@ GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
 
--- Completed on 2016-01-02 13:45:23 CET
+-- Completed on 2016-01-03 14:42:00 CET
 
 --
 -- PostgreSQL database dump complete
