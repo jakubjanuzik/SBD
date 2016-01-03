@@ -32,10 +32,11 @@ def edit_client(form, client_id):
         )
     utils.update('clients', {'id': client_id},  client_data)
     for phone in form.data['phones']:
-        utils.insert(
-            'client_phones',
-            {'client_id': client_id, 'phone': phone['phone']}
-        )
+        if phone['phone']:
+            utils.insert(
+                'client_phones',
+                {'client_id': client_id, 'phone': phone['phone']}
+            )
 
 
 def get_client(id):

@@ -15,6 +15,7 @@ def create():
     form = UserForm()
     if form.validate_on_submit():
         create_client(form)
+        return redirect(url_for('clients.list'))
     return render_template('clients/create.html', form=form)
 
 
@@ -26,7 +27,7 @@ def edit(client_id):
     if form.validate_on_submit():
         form.populate_obj(client)
         edit_client(form, client_id)
-        redirect(url_for('clients.list'))
+        return redirect(url_for('clients.list'))
     return render_template('clients/create.html', form=form)
 
 
