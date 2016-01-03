@@ -33,9 +33,10 @@
                                     <td> {{client.email}} </td>
                                     <td>
                                         {% for phone in client.phones %}
-                                            {% if phone.phone %}
-                                                {{ phone.phone }},
-                                            {% endif %}
+                                            {{ phone }}
+                                                {% if not loop.last %}
+                                                    {{','}}
+                                                {% endif %}
                                         {% endfor %}
                                     </td>
                                     <td><a href="{{url_for("clients.edit", client_id=client.id)}}" class="btn btn-warning">Edit</a></td>

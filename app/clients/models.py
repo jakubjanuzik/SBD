@@ -1,7 +1,5 @@
 from collections import namedtuple
 
-from flask import abort
-from psycopg2 import ProgrammingError
 from app import utils
 
 
@@ -57,13 +55,24 @@ def get_client(id):
     return c
 
 
+def get_full_client_dict(client):
+    client_dict = dict(client.__dict__)  # Kinda hack  :-) Don't learn that :P
+    phones = utils.run_custom_query(
+        '''SELECT phone FROM client_phones WHERE client_id = {}'''.format(
+            client.id
+        )
+    )
+    client_dict['phones'] = [phone.phone for phone in phones if phone.phone]
+    return client_dict
+
+
 class Cl():
     def __init__(self, data):
         self.id = data.id
         self.name = data.name
         self.surname = data.surname
         self.email = data.email
-        self.phones = [Ph(phone) if phone else None for phone in data.phones]
+        self.phones = [Ph(phone['phone']) for phone in data.phones if phone]
 
 
 class Ph():

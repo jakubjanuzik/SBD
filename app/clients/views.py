@@ -1,10 +1,12 @@
 from flask import render_template, flash, redirect, url_for
 from app.decorators import login_required
-from app.utils import run_custom_query
+from app.utils import run_custom_query, select_all_from_table
 
 from . import clients
 from .forms import UserForm
-from .models import create_client, get_client, edit_client
+from .models import (
+    create_client, get_client, edit_client, get_full_client_dict
+)
 
 
 @login_required
@@ -23,7 +25,6 @@ def edit(client_id):
     form = UserForm(obj=client)
     if form.validate_on_submit():
         form.populate_obj(client)
-        import ipdb; ipdb.set_trace()
         edit_client(form, client_id)
         redirect(url_for('clients.list'))
     return render_template('clients/create.html', form=form)
@@ -32,16 +33,14 @@ def edit(client_id):
 @login_required
 @clients.route('/', methods=['GET'])
 def list():
-    clients = run_custom_query(
-        """SELECT * FROM clients"""
-    )
+    clients = select_all_from_table('clients')
     clients_list = []
     for client in clients:
-        clients_list.append(get_client(client.id))
+        clients_list.append(get_full_client_dict(client))
 
     return render_template(
         'clients/list.html',
-        clients=sorted(clients_list, key=lambda x: x.id)
+        clients=sorted(clients_list, key=lambda x: x['id'])
     )
 
 
