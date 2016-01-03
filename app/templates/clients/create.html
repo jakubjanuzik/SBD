@@ -1,0 +1,85 @@
+{% extends "base/base.html" %}
+{% from "helpers/_formhelper.html" import render_form %}
+{% block main_content %}
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Create Client</h3>
+        </div>
+        {% call render_form(form) %}
+            <a class="btn btn-success" id="AddPhoneRow">Add phone</a>
+        {% endcall %}
+{% endblock %}
+
+{% block javascripts %}
+    {{ super() }}
+    <script>
+    (function ($) {
+      $.fn.extend({
+        formsetHelpers: function () {
+          return this.each(function () {
+            var obj = $(this);
+
+            var $btn = $("<a>");
+            $btn.addClass("btn");
+            $btn.addClass("btn-danger");
+            $btn.addClass("delete");
+            $btn.text("X");
+
+            var $parent = obj.parent();
+            $parent.append($btn);
+
+            $btn.on("click", function(){
+                $(this).parent().remove();
+            });
+
+          }); //Close jQuery plugin
+        }
+      });
+    })(jQuery);
+    </script>
+
+    <script>
+    (function ($) {
+      $.fn.extend({
+        addRows: function () {
+            $(this).on("click", function(){
+                var $last = $('[id ^=phones-][id $=-phone]').last();
+                var elem_id = $last.attr('id');
+                var elem_num = parseInt(elem_id.replace(/.*-(\d{1,4})-.*/m, '$1')) + 1;
+                var newId = $last.attr('id').replace('-' + (elem_num - 1) + '-', '-' + (elem_num) + '-');
+
+                var $row = $last.parent().clone(true, true);
+                $row.find('label').attr('id', newId);
+                $row.find('input').attr('id', newId);
+                $row.find('input').attr('name', newId);
+                $row.find('input').val('');
+
+                $last.parent().after($row);
+            });
+        }
+      });
+    })(jQuery);
+    </script>
+    <script type="text/javascript">
+        $('[id ^=phones-][id $=-phone]').formsetHelpers();
+        $('#AddPhoneRow').addRows();
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        a.delete{
+            position: absolute;
+            right: 25px;
+            margin-top: -31px;
+            padding: 3px 9px;
+            opacity: 0.5;
+            -webkit-transition: all ease 0.2s;
+            -o-transition: all ease 0.2s;
+            transition: all ease 0.2s;
+        }
+        a.delete:hover{
+            opacity: 1;
+        }
+    </style>
+{% endblock %}

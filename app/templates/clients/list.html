@@ -1,0 +1,60 @@
+{% extends "base/base.html" %}
+{% block main_content %}
+  <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Lista klientów</h3>
+                    <div class="box-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
+                            <div class="input-group-btn">
+                                <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr>
+                                <th>ID</th>
+                                <th>Name</th>
+                                <th>Surname</th>
+                                <th>Email</th>
+                                <th>Phones</th>
+                            </tr>
+                            {% for client in clients %}
+                                <tr>
+                                    <td> {{client.id}} </td>
+                                    <td> {{client.name}} </td>
+                                    <td> {{client.surname}} </td>
+                                    <td> {{client.email}} </td>
+                                    <td>
+                                        {% for phone in client.phones %}
+                                            {{ phone }}
+                                                {% if not loop.last %}
+                                                    {{','}}
+                                                {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td><a href="{{url_for("clients.edit", client_id=client.id)}}" class="btn btn-warning">Edit</a></td>
+                                    <td><a href="{{url_for("clients.delete", client_id=client.id)}}" class="btn btn-danger">Delete</a></td>
+                                </tr>
+                            {% else %}
+                            <tr>
+                                <td>Brak zdefiniowanych klientow</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+    </div>
+{% endblock %}
+
+
