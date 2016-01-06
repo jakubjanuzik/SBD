@@ -5,7 +5,6 @@ import psycopg2
 from psycopg2.extensions import AsIs
 from flask import g, abort
 from werkzeug import secure_filename
-
 from app import app
 
 
@@ -94,13 +93,21 @@ def select_row_from_table_by_id(tablename, row_id):
     return data
 
 
-def select(tablename, where):
+def select(tablename, where_params={}):
     conn = getattr(g, 'db', None)
     cursor = conn.cursor()
-    sql = """SELECT * FROM {}
-    WHERE {};""".format(
-        tablename,
-        ' AND '.join('{}=\'{}\''.format(k, where[k]) for k in where))
+    sql = 'SELECT * FROM {};'.format(tablename)
+
+    if where_params:
+        if type(where_params) == str:
+            sql = sql[:-1] + ' WHERE {};'.format(where_params)
+        elif type(where_params) == dict:
+            sql = sql[:-1] + ' WHERE {};'.format(
+                ' AND '.join(
+                    '{}=\'{}\''.format(k, where_params[k])
+                    for k in where_params)
+            )
+
     cursor.execute(sql)
     data = cursor.fetchall()
     conn.commit()

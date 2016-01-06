@@ -4,7 +4,7 @@ from flask import (
 
 from . import product
 from .forms import ProductForm
-from .models import get_product_images
+from .models import get_product_images, get_all_products
 from app.decorators import login_required
 from app.utils import (
     insert_into_table, run_custom_query, select_row_from_table_by_id, update,
@@ -26,7 +26,7 @@ def create_product():
         if images:
             for image in images:
                     save_image(image, product_id)
-            return redirect(url_for('index'))
+            return redirect(url_for('product.list'))
 
     return render_template('products/create.html', form=form)
 
@@ -97,3 +97,15 @@ def delete_image(id):
     return jsonify({
         'success': True
     })
+
+
+@login_required
+@product.route('/ajax_search/', methods=['GET'])
+@product.route('/ajax_search/<query>', methods=['GET'])
+def ajax_search(query=''):
+    products = get_all_products(
+        """name LIKE '%{}%' or description LIKE '%{}%'
+        AND deleted = False""".format(query, query)
+    )
+
+    return jsonify({'products': [product.serialize() for product in products]})

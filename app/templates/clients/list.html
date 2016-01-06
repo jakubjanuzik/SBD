@@ -33,7 +33,7 @@
                                     <td> {{client.email}} </td>
                                     <td>
                                         {% for phone in client.phones %}
-                                            {{ phone }}
+                                            {{ phone.phone }}
                                                 {% if not loop.last %}
                                                     {{','}}
                                                 {% endif %}

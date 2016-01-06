@@ -1,11 +1,11 @@
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for, jsonify
 from app.decorators import login_required
-from app.utils import run_custom_query, select_all_from_table
+from app.utils import run_custom_query
 
 from . import clients
 from .forms import UserForm
 from .models import (
-    create_client, get_client, edit_client, get_full_client_dict
+    create_client, get_client, edit_client, get_all_clients
 )
 
 
@@ -34,14 +34,11 @@ def edit(client_id):
 @login_required
 @clients.route('/', methods=['GET'])
 def list():
-    clients = select_all_from_table('clients')
-    clients_list = []
-    for client in clients:
-        clients_list.append(get_full_client_dict(client))
+    clients = get_all_clients()
 
     return render_template(
         'clients/list.html',
-        clients=sorted(clients_list, key=lambda x: x['id'])
+        clients=clients
     )
 
 
@@ -57,3 +54,13 @@ def delete(client_id):
     except:
         flash('Something went wrong. Please, contact administrator', 'error')
         return redirect(url_for('clients.list'))
+
+
+@login_required
+@clients.route('/ajax_search/', methods=['GET'])
+@clients.route('/ajax_search/<query>', methods=['GET'])
+def ajax_search(query=''):
+    clients = get_all_clients(
+        """name LIKE '%{}%' or surname LIKE '%{}%'""".format(query, query))
+
+    return jsonify({'clients': [client.serialize() for client in clients]})

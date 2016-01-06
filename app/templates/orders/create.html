@@ -1,0 +1,188 @@
+{% extends "base/base.html" %}
+{% from "helpers/_formhelper.html" import render_form %}
+{% block main_content %}
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Create Order</h3>
+        </div>
+        {% call render_form(form) %}
+
+        {% endcall %}
+{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='selectize/css/selectize.bootstrap3.css') }}">
+    <style>
+        .selectize-control .selectize-dropdown [data-selectable] {
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .selectize-control .selectize-dropdown .by {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        .selectize-control .selectize-dropdown .by::before {
+            content: 'by ';
+        }
+        .selectize-control .selectize-dropdown .name {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+        .selectize-control .selectize-dropdown .title {
+            display: block;
+        }
+        .selectize-control .selectize-dropdown .description {
+            font-size: 12px;
+            display: block;
+            opacity: 0.5;
+            white-space: nowrap;
+            width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+        .selectize-control .selectize-dropdown .meta {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 10px;
+        }
+        .selectize-control .selectize-dropdown .meta li {
+            margin: 0;
+            padding: 0;
+            display: inline;
+            margin-right: 10px;
+        }
+        .selectize-control .selectize-dropdown .meta li span {
+            font-weight: bold;
+        }
+        .selectize-control::before {
+            -moz-transition: opacity 0.2s;
+            -webkit-transition: opacity 0.2s;
+            transition: opacity 0.2s;
+            content: ' ';
+            z-index: 2;
+            position: absolute;
+            display: block;
+            top: 50%;
+            right: 34px;
+            width: 16px;
+            height: 16px;
+            margin: -8px 0 0 0;
+            background: url(../images/spinner.gif);
+            background-size: 16px 16px;
+            opacity: 0;
+        }
+        .selectize-control.loading::before {
+            opacity: 0.4;
+        }
+        .icon {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+            vertical-align: middle;
+            background-size: 16px 16px;
+            margin: 0 3px 0 0;
+        }
+        .icon.fork {
+            background-image: url(../images/repo-fork.png);
+        }
+        .icon.source {
+            background-image: url(../images/repo-source.png);
+        }
+        .field_list > .form-group:nth-child(odd){
+            width:50%;
+            float: left;
+        }
+        .field_list > .form-group:nth-child(even){
+            margin-left:10%;
+            width:40%;
+            float: left;
+        }
+    </style>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ url_for('static', filename='selectize/js/standalone/selectize.js') }}"></script>
+
+    <script>
+        $('#client').selectize({
+        valueField: 'id',
+        labelField: 'label',
+        searchField: 'name',
+        create: false,
+        render: {
+        option: function(item, escape) {
+            return '<div>' +
+                    '<span class="title">' +
+                        '<span class="name"><i class="glyphicon glyphicon-user" style="color:#bbb;"></i> ' + escape(item.name) + ' '+ escape(item.surname) + '</span>' +
+                    '</span>' +
+                    '<ul class="meta">' +
+                        '<li class="language">ID: ' + escape(item.id) + '</li>' +
+                        '<li class="language">E-mail: ' + escape(item.email) + '</li>' +
+                        (item.phones && item.phones.length > 0 ? '<li class="language"> Phone: ' + escape(item.phones[0].phone) + '</li>' : '') +
+                    '</ul>' +
+                '</div>';
+            }
+        },
+        load: function(query, callback) {
+            if (!query.length) return callback();
+            $.ajax({
+                url: '{{ url_for('clients.ajax_search') }}' + encodeURIComponent(query),
+                type: 'GET',
+                error: function() {
+                    callback();
+                },
+                success: function(res) {
+                    console.log(res);
+                    callback(res.clients.slice(0, 10));
+                }
+            });
+        },
+        onChange: function(value){
+            console.log($(this));
+        }
+    }).load();
+
+    $inputs = $("select[name^='products'").selectize({
+        valueField: 'id',
+        labelField: 'name',
+        searchField: 'name',
+        create: false,
+        render: {
+        option: function(item, escape) {
+            console.log(item);
+            return '<div>' +
+                    '<span class="title">' +
+                        '<span class="name"><i class="glyphicon glyphicon-user" style="color:#bbb;"></i> ' + escape(item.name) + ' '+ escape(item.price) + '</span>' +
+                    '</span>' +
+                    '<ul class="meta">' +
+                        '<li class="language">ID: ' + escape(item.id) + '</li>' +
+                        '<li class="language">Price: ' + escape(item.price) + '</li>' +
+                    '</ul>' +
+                '</div>';
+            }
+        },
+        load: function(query, callback) {
+            if (!query.length) return callback();
+            $.ajax({
+                url: '{{ url_for('product.ajax_search') }}' + encodeURIComponent(query),
+                type: 'GET',
+                error: function() {
+                    callback();
+                },
+                success: function(res) {
+                    console.log(res);
+                    callback(res.products.slice(0, 10));
+                }
+            });
+        }
+    });
+
+    $inputs.each(function(index, value){
+        $(this).on('change', function(){
+            $input_price = $(this).parent().next().find('input');
+            console.log($inputs[index].selectize.options[value.value].price);
+            $input_price.val($inputs[index].selectize.options[value.value].price);
+        });
+    });
+
+
+</script>
+{% endblock %}

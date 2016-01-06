@@ -20,13 +20,16 @@
                         <tbody>
                             <tr>
                                 <th>ID</th>
-                                <th>User</th>
-                                <th>Date</th>
+                                <th>Name</th>
+                                <th>price</th>
+                                <th>Description</th>
                                 <th>Status</th>
-                                <th>Reason</th>
+                                <th>Edit</th>
+                                <th>Delete</th>
                             </tr>
                             {% for product in products %}
                                 <tr>
+                                    <td>{{product.id}}</td>
                                     <td>{{product.name}}</td>
                                     <td>{{product.price}}</td>
                                     <td>{{product.description}}</td>

@@ -12,9 +12,10 @@ def create_client(form):
 
     client_id = utils.insert('clients', client_data)
     for phone in form.data['phones']:
-        utils.insert(
-            'client_phones', {'client_id': client_id, 'phone': phone['phone']}
-        )
+        if phone['phone']:
+            utils.insert(
+                'client_phones', {'client_id': client_id, 'phone': phone['phone']}
+            )
 
 
 def edit_client(form, client_id):
@@ -67,15 +68,51 @@ def get_full_client_dict(client):
     return client_dict
 
 
+def get_phones_for_client(client):
+    phones = utils.run_custom_query(
+        '''SELECT phone FROM client_phones WHERE client_id = {}'''.format(
+            client.id
+        )
+    )
+    return [phone.phone for phone in phones if phone.phone]
+
+
+def get_all_clients(where_params={}):
+    clients = utils.select('clients', where_params)
+    clients_list = []
+    for client in clients:
+        clients_list.append(get_client(client.id))
+    return clients_list
+
+
 class Cl():
+
     def __init__(self, data):
         self.id = data.id
         self.name = data.name
         self.surname = data.surname
         self.email = data.email
-        self.phones = [Ph(phone['phone']) for phone in data.phones if phone]
+        self.phones = [
+            Ph(phone=phone['phone']) for phone in data.phones if phone
+        ]
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'surname': self.surname,
+            'email': self.email,
+            'phones': [phone.serialize() for phone in self.phones],
+            'label': 'ID: {}, {} {}'.format(self.id, self.name, self.surname)
+        }
 
 
 class Ph():
+
     def __init__(self, phone):
         self.phone = phone
+
+    def serialize(self):
+        return {
+            'phone': self.phone,
+        }
