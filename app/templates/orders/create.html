@@ -6,9 +6,11 @@
             <h3 class="box-title">Create Order</h3>
         </div>
         {% call render_form(form) %}
-
+            <button id="AddRow">Add Product</button>
         {% endcall %}
 {% endblock %}
+
+
 {% block stylesheets %}
     <link rel="stylesheet" href="{{ url_for('static', filename='selectize/css/selectize.bootstrap3.css') }}">
     <style>
@@ -87,19 +89,50 @@
         .icon.source {
             background-image: url(../images/repo-source.png);
         }
-        .field_list > .form-group:nth-child(odd){
-            width:50%;
-            float: left;
+        .field_list {
+            border:1px solid #ddd;
         }
-        .field_list > .form-group:nth-child(even){
-            margin-left:10%;
-            width:40%;
-            float: left;
+        .field_list > .form-group:nth-child(3n):after{
+            content: "";
+            width: 100%;
+            padding:10px;
+            border-bottom: 1px solid #ddd;
+            display:block;
         }
     </style>
 {% endblock %}
+
+
 {% block javascripts %}
     <script src="{{ url_for('static', filename='selectize/js/standalone/selectize.js') }}"></script>
+
+    <script>
+    (function ($) {
+      $.fn.extend({
+        addRows: function () {
+            $(this).on("click", function(){
+                var $last = $('[id ^=phones-][id $=-phone]').last();
+                var elem_id = $last.attr('id');
+                var elem_num = parseInt(elem_id.replace(/.*-(\d{1,4})-.*/m, '$1')) + 1;
+                var newId = $last.attr('id').replace('-' + (elem_num - 1) + '-', '-' + (elem_num) + '-');
+
+                var $row = $last.parent().clone(true, true);
+                $row.find('label').attr('id', newId);
+                $row.find('input').attr('id', newId);
+                $row.find('input').attr('name', newId);
+                $row.find('input').val('');
+
+                $last.parent().after($row);
+            });
+        }
+      });
+    })(jQuery);
+    </script>
+    <script type="text/javascript">
+        $('[id ^=phones-][id $=-phone]').formsetHelpers();
+        $('#AddRow').addRows();
+    </script>
+
 
     <script>
         $('#client').selectize({
@@ -107,6 +140,7 @@
         labelField: 'label',
         searchField: 'name',
         create: false,
+        options: {{ client_choices | safe}},
         render: {
         option: function(item, escape) {
             return '<div>' +
@@ -120,69 +154,42 @@
                     '</ul>' +
                 '</div>';
             }
-        },
-        load: function(query, callback) {
-            if (!query.length) return callback();
-            $.ajax({
-                url: '{{ url_for('clients.ajax_search') }}' + encodeURIComponent(query),
-                type: 'GET',
-                error: function() {
-                    callback();
-                },
-                success: function(res) {
-                    console.log(res);
-                    callback(res.clients.slice(0, 10));
-                }
-            });
-        },
-        onChange: function(value){
-            console.log($(this));
         }
-    }).load();
+    });
 
     $inputs = $("select[name^='products'").selectize({
         valueField: 'id',
         labelField: 'name',
         searchField: 'name',
         create: false,
+        options: {{ product_choices | safe }},
         render: {
         option: function(item, escape) {
-            console.log(item);
             return '<div>' +
                     '<span class="title">' +
-                        '<span class="name"><i class="glyphicon glyphicon-user" style="color:#bbb;"></i> ' + escape(item.name) + ' '+ escape(item.price) + '</span>' +
+                        '<span class="name"><i class="glyphicon glyphicon-user" style="color:#bbb;"></i> ' + escape(item.name) + ' Price:'+ escape(item.price['py/id']) + 'PLN</span>' +
                     '</span>' +
                     '<ul class="meta">' +
                         '<li class="language">ID: ' + escape(item.id) + '</li>' +
-                        '<li class="language">Price: ' + escape(item.price) + '</li>' +
+                        '<li class="language">Price: ' + escape(item.price['py/id']) + 'PLN </li>' +
                     '</ul>' +
                 '</div>';
             }
-        },
-        load: function(query, callback) {
-            if (!query.length) return callback();
-            $.ajax({
-                url: '{{ url_for('product.ajax_search') }}' + encodeURIComponent(query),
-                type: 'GET',
-                error: function() {
-                    callback();
-                },
-                success: function(res) {
-                    console.log(res);
-                    callback(res.products.slice(0, 10));
-                }
-            });
         }
     });
 
     $inputs.each(function(index, value){
         $(this).on('change', function(){
             $input_price = $(this).parent().next().find('input');
-            console.log($inputs[index].selectize.options[value.value].price);
-            $input_price.val($inputs[index].selectize.options[value.value].price);
+            $input_quantity = $(this).parent().next().next().find('input');
+            $input_price.val($inputs[index].selectize.options[value.value].price['py/id']);
+            if ($input_quantity.val() == '') {
+                $input_quantity.val(1);
+            };
         });
     });
 
 
 </script>
 {% endblock %}
+

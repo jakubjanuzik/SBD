@@ -106,6 +106,9 @@ class Cl():
             'label': 'ID: {}, {} {}'.format(self.id, self.name, self.surname)
         }
 
+    def __repr__(self):
+        return 'Client ID: {}, {} {}'.format(self.id, self.name, self.surname)
+
 
 class Ph():
 

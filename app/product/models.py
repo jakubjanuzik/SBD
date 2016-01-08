@@ -44,12 +44,14 @@ def get_all_products(where_params={}):
 
 class Product():
 
-    def __init__(self, id, name='', price=0.0, description='', images=[]):
+    def __init__(self, id=None, name='', price=0.0, description='', images=[], quantity=0):
         self.id = id
         self.name = name
-        self.price = str(price)
+        self.original_price = price
+        self.price = price
         self.description = description
         self.images = images
+        self.quantity = quantity
 
     def serialize(self):
         return {
@@ -58,4 +60,11 @@ class Product():
             'price': self.price,
             'description': self.description,
             'images': self.images,
+        }
+
+    def serialize_order(self):
+        return {
+            'id': self.id,
+            'price': self.price,
+            'quantity': self.quantity,
         }

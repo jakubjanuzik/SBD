@@ -115,6 +115,26 @@ def select(tablename, where_params={}):
     return data
 
 
+def delete(tablename, where_params):
+    conn = getattr(g, 'db', None)
+    cursor = conn.cursor()
+    sql = 'DELETE FROM {};'.format(tablename)
+
+    if where_params:
+        if type(where_params) == str:
+            sql = sql[:-1] + ' WHERE {};'.format(where_params)
+        elif type(where_params) == dict:
+            sql = sql[:-1] + ' WHERE {};'.format(
+                ' AND '.join(
+                    '{}=\'{}\''.format(k, where_params[k])
+                    for k in where_params)
+            )
+
+    cursor.execute(sql)
+    conn.commit()
+    cursor.close()
+
+
 def select_one_or_404(tablename, where):
     data = select(tablename, where)
     try:
