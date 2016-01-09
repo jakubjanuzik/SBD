@@ -97,15 +97,3 @@ def delete_image(id):
     return jsonify({
         'success': True
     })
-
-
-@login_required
-@product.route('/ajax_search/', methods=['GET'])
-@product.route('/ajax_search/<query>', methods=['GET'])
-def ajax_search(query=''):
-    products = get_all_products(
-        """name LIKE '%{}%' or description LIKE '%{}%'
-        AND deleted = False""".format(query, query)
-    )
-
-    return jsonify({'products': [product.serialize() for product in products]})

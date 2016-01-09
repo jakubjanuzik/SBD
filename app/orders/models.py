@@ -2,7 +2,7 @@ from app.product.models import Product
 from app.clients.models import Cl, get_client
 from app.utils import insert, select, select_one_or_404, update, delete
 
-from flask import abort
+from flask import abort, session
 
 
 def get_initial_status():
@@ -32,7 +32,7 @@ def save_order(data):
     data_orders = {
         'client_id': data['client'],
         'status_id': get_initial_status().id,
-        'user_id': data['user']
+        'user_id': session.get('user')
     }
     order_id = insert('orders', data_orders)
 
@@ -99,7 +99,6 @@ def update_order(order_id, data):
     update('orders', {'id': order_id}, order_data)
 
     delete('order_products', {'order_id': order_id})
-
     for product in data['products']:
         data_products = {
             'order_id': order_id,
@@ -114,8 +113,10 @@ class Order(object):
     def __init__(self, id, client=None, products=None, status=None):
         self.client = client
         self.products = products
-        self.id = id
         self.status = status
+        self.order = id
+        self.id = id
+
         if type(client) is int:
             self.client = get_client(client)
         elif type(client) is Cl:

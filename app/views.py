@@ -1,5 +1,5 @@
 import psycopg2
-from flask import request, g
+from flask import request, g, redirect, url_for
 from app import app
 from psycopg2.extras import NamedTupleCursor
 from flask import render_template, session, send_file
@@ -38,9 +38,7 @@ def disconnect_from_db(exception):
 @app.route('/', methods=['GET', 'POST'])
 @login_required
 def index():
-    if request.method == 'POST':
-        return 'Hello POST'
-    return render_template('index.html')
+    return redirect(url_for('orders.list'))
 
 
 @app.route('/image/<path>', methods=['GET'])

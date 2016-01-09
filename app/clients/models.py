@@ -89,6 +89,7 @@ class Cl():
 
     def __init__(self, data):
         self.id = data.id
+        self.client = data.id
         self.name = data.name
         self.surname = data.surname
         self.email = data.email
@@ -99,15 +100,13 @@ class Cl():
     def serialize(self):
         return {
             'id': self.id,
+            'client': self.id,
             'name': self.name,
             'surname': self.surname,
             'email': self.email,
             'phones': [phone.serialize() for phone in self.phones],
             'label': 'ID: {}, {} {}'.format(self.id, self.name, self.surname)
         }
-
-    def __repr__(self):
-        return 'Client ID: {}, {} {}'.format(self.id, self.name, self.surname)
 
 
 class Ph():
