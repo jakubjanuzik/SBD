@@ -40,7 +40,6 @@ def update_order(order_id, data):
     update('orders', {'id': order_id}, order_data)
 
     delete('order_products', {'order_id': order_id})
-
     for product in data['products']:
         data_products = {
             'order_id': order_id,
@@ -58,6 +57,7 @@ class Order(object):
         self.client = None
         self.products = []
         self.id = id
+        self.order = id
 
         if type(client) is int:
             self.client = get_client(client)

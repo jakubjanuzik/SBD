@@ -27,6 +27,7 @@ class OrderProductForm(NoCsrfForm):
             for item in get_all_products()
         ]
 
+
 class OrderForm(Form):
     client = NoValidateSelectField('Client', validators=[DataRequired()])
     products = FieldList(
@@ -37,6 +38,5 @@ class OrderForm(Form):
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
         self.client.choices = [
-            (item.id, '{} {}'.format(item.name, item.surname))
-            for item in get_all_clients()
+            (item.id, item.name) for item in get_all_clients()
         ]

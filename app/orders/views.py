@@ -16,7 +16,7 @@ def create():
     form = OrderForm()
     if form.validate_on_submit():
         save_order(form.data)
-        redirect(url_for('orders.list'))
+        return redirect(url_for('orders.list'))
 
     clients = get_all_clients()
     form.client.choices = [
@@ -25,7 +25,14 @@ def create():
     client_choices = jsonpickle.dumps(clients)
 
     products = get_all_products()
-    product_choices = jsonpickle.dumps(products)
+    product_choices = {}
+    for product in products:
+        product_choices[product.id] = {
+            'id': product.id,
+            'price': product.string_price,
+        }
+    product_choices = jsonpickle.dumps(product_choices)
+
     return render_template(
         'orders/create.html',
         form=form,
@@ -37,10 +44,9 @@ def create():
 @orders.route('/edit/<int:order_id>', methods=['GET', 'POST'])
 def edit(order_id):
     order = get_order(order_id)
+    order.client = order.client.id
     form = OrderForm(obj=order)
-
     if form.validate_on_submit():
-        form.populate_obj(order)
         update_order(order_id, form.data)
         redirect(url_for('orders.list'))
 
@@ -51,8 +57,13 @@ def edit(order_id):
     client_choices = jsonpickle.dumps(clients)
 
     products = get_all_products()
-    product_choices = jsonpickle.dumps(products)
-
+    product_choices = {}
+    for product in products:
+        product_choices[product.id] = {
+            'id': product.id,
+            'price': product.string_price,
+        }
+    product_choices = jsonpickle.dumps(product_choices)
 
     return render_template(
         'orders/create.html',

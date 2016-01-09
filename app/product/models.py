@@ -46,9 +46,11 @@ class Product():
 
     def __init__(self, id=None, name='', price=0.0, description='', images=[], quantity=0):
         self.id = id
+        self.product = id
         self.name = name
         self.original_price = price
         self.price = price
+        self.string_price = str(price)
         self.description = description
         self.images = images
         self.quantity = quantity
