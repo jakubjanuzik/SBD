@@ -1,7 +1,7 @@
 from flask_wtf import Form
 from wtforms import Form as NoCsrfForm
 from wtforms import (
-    StringField, FieldList, FormField, SelectField, DecimalField, IntegerField
+    FieldList, FormField, SelectField, DecimalField, IntegerField
 )
 from wtforms.validators import DataRequired, NumberRange
 from app.product.models import get_all_products
@@ -26,6 +26,7 @@ class OrderProductForm(NoCsrfForm):
             (item.id, 'id:{}, {} - {}'.format(item.id, item.name, item.price))
             for item in get_all_products()
         ]
+
 
 class OrderForm(Form):
     client = NoValidateSelectField('Client', validators=[DataRequired()])

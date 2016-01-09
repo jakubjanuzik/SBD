@@ -4,7 +4,7 @@
         <div class="col-xs-12">
             <div class="box">
                 <div class="box-header">
-                    <h3 class="box-title">Lista zamówień</h3>
+                    <h3 class="box-title">Lista Twoich zamówień</h3>
                     <div class="box-tools">
                         <div class="input-group input-group-sm" style="width: 150px;">
                             <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
@@ -21,19 +21,15 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Client</th>
-                                <th>Status</th>
-                                <th>Edit</th>
-                                <th>Delete</th>
+                                <th>Cancel</th>
+                                <th>Confirm</th>
                             </tr>
                             {% for order in orders %}
                                 <tr>
                                     <td> {{order.id}} </td>
                                     <td> Client ID: {{order.client.id}}, {{order.client.name}}</td>
-                                    <td>
-                                        <span class="label {% if order.status == 'Cancelled' %} label-danger {% else %} label-success {% endif %}">{{order.status}}</span>
-                                    </td>
-                                    <td><a href="{{url_for("orders.edit", order_id=order.id)}}" class="btn btn-warning">Edit</a></td>
-                                    <td><a href="{{url_for("orders.list", order_id=order.id)}}" class="btn btn-danger">Delete</a></td>
+                                    <td><a href="{{url_for("orders.cancel", order_id=order.id)}}" class="btn btn-danger">Cancel</a></td>
+                                    <td><a href="{{url_for("orders.confirm", order_id=order.id)}}" class="btn btn-info">Confirm</a></td>
                                 </tr>
                             {% else %}
                             <tr>
