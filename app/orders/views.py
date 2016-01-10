@@ -51,6 +51,7 @@ def edit(order_id):
     order.client = order.client.id
     form = OrderForm(obj=order)
     if form.validate_on_submit():
+        import ipdb; ipdb.set_trace()
         update_order(order_id, form.data)
         redirect(url_for('orders.list'))
 
