@@ -14,8 +14,46 @@ def create_client(form):
     for phone in form.data['phones']:
         if phone['phone']:
             utils.insert(
-                'client_phones', {'client_id': client_id, 'phone': phone['phone']}
+                'client_phones',
+                {'client_id': client_id, 'phone': phone['phone']}
             )
+
+    if form.data['billing_address']:
+        data = form.data['billing_address']
+        address_id = utils.insert(
+            'addresses',
+            {
+                'country': data['country'],
+                'city': data['city'],
+                'street': data['street']
+            }
+        )
+        utils.insert(
+            'client_addresses',
+            {
+                'client_id': client_id,
+                'address_id': address_id,
+                'type': 'billing'
+            }
+        )
+    if form.data['delivery_address']:
+        data = form.data['delivery_address']
+        address_id = utils.insert(
+            'addresses',
+            {
+                'country': data['country'],
+                'city': data['city'],
+                'street': data['street']
+            }
+        )
+        utils.insert(
+            'client_addresses',
+            {
+                'client_id': client_id,
+                'address_id': address_id,
+                'type': 'delivery'
+            }
+        )
 
 
 def edit_client(form, client_id):
