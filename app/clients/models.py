@@ -19,7 +19,7 @@ def create_client(form):
             )
 
     if form.data['billing_address']:
-        data = form.data['billing_address']
+        data = form.data['billing_address'][0]
         address_id = utils.insert(
             'addresses',
             {
@@ -37,7 +37,7 @@ def create_client(form):
             }
         )
     if form.data['delivery_address']:
-        data = form.data['delivery_address']
+        data = form.data['delivery_address'][0]
         address_id = utils.insert(
             'addresses',
             {
