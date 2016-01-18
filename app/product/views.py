@@ -1,7 +1,7 @@
 from flask import (
     render_template, redirect, url_for, request, flash, abort, jsonify
 )
-
+from psycopg2 import IntegrityError
 from . import product
 from .forms import ProductForm
 from .models import get_product_images, get_all_products
@@ -21,7 +21,11 @@ def create_product():
 
         data = form.data.copy()
         data.pop("images", None)
-        product_id = insert_into_table('product', data)
+        try:
+            product_id = insert_into_table('products', data)
+        except IntegrityError:
+            form.name.errors = ('Product with given name already exists',)
+            return render_template('products/create.html', form=form)
         images = request.files.getlist("images")
         if images:
             for image in images:
@@ -34,9 +38,19 @@ def create_product():
 @login_required
 @product.route('/', methods=['GET'])
 def list():
-    products = run_custom_query(
-        """SELECT * FROM product
-        WHERE deleted = False""")
+    query = request.args.get('query')
+    if not query:
+        products = run_custom_query(
+            """SELECT * FROM products
+            WHERE deleted = False""")
+    else:
+        products = run_custom_query(
+            """
+                SELECT * FROM productss
+                WHERE (LOWER(name) LIKE '%{0}%' OR LOWER(description) LIKE '%{0}%')
+                AND deleted = False
+            """.format(query.lower())
+        )
 
     return render_template('products/list.html', products=products)
 
@@ -58,7 +72,11 @@ def edit(id):
     if form.validate_on_submit():
         data = form.data.copy()
         data.pop("images", None)
-        update("product", {"id": id}, data)
+        try:
+            update("product", {"id": id}, data)
+        except IntegrityError:
+            form.name.errors = ('Product with given name already exists',)
+            render_template('products/create.html', form=form)
         images = request.files.getlist("images")
         if images:
             for image in images:

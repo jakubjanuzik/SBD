@@ -1,6 +1,8 @@
 from app.product.models import Product
 from app.clients.models import Cl, get_client
-from app.utils import insert, select, select_one_or_404, update, delete
+from app.utils import (
+   insert, select, select_one_or_404, update, delete, run_custom_query
+)
 
 from flask import abort, session
 
@@ -64,6 +66,43 @@ def get_all_orders():
         status = select('order_statuses', {'id': order.status_id})[0]
         orders_list.append(
            Order(order.id, order.client_id, order_products, status.status_name)
+        )
+    return sorted(orders_list, key=lambda x: x.id)
+
+
+def get_orders_with_query(query):
+    orders_list = []
+    orders = run_custom_query(
+        """
+            SELECT o.*, c.name, c.surname, c.email, s.status_name
+            FROM orders o
+            JOIN clients c ON c.id = o.client_id
+            JOIN order_statuses s ON s.id = o.status_id
+
+            WHERE (
+                LOWER(c.name) LIKE '%{0}%' OR
+                LOWER(c.surname) LIKE '%{0}%' OR
+                LOWER(c.email) LIKE '%{0}%' OR
+                LOWER(s.status_name) LIKE '%{0}%'
+            ) OR EXISTS (
+                SELECT  1
+                FROM order_products op
+                    INNER JOIN products p
+                    ON op.product_id = p.id
+                WHERE
+                    LOWER(p.name) LIKE '%{0}%'
+                    OR LOWER(p.description) LIKE '%{0}%'
+            )
+        """.format(query)
+    )
+    for order in orders:
+        order_products = select('order_products', {'order_id': order.id})
+        orders_list.append(
+            Order(
+                id=order.id,
+                client=order.client_id,
+                status=order.status_name
+            )
         )
     return sorted(orders_list, key=lambda x: x.id)
 

@@ -11,7 +11,17 @@ class PhoneForm(NoCsrfForm):
     phone = StringField('Phone number')
 
 
-class AddressForm(NoCsrfForm):
+class BillingAddressForm(NoCsrfForm):
+    street = StringField('Street', validators=[DataRequired()])
+    city = StringField('City', validators=[DataRequired()])
+    country = SelectField(
+        'Country', validators=[DataRequired()], choices=[
+            ('', '-------'),
+            ('PL', 'Poland'),
+        ]
+    )
+
+class DeliveryAddressForm(NoCsrfForm):
     street = StringField('Street', validators=[DataRequired()])
     city = StringField('City', validators=[DataRequired()])
     country = SelectField(
@@ -45,16 +55,14 @@ class UserForm(Form):
         ),
         min_entries=2,
     )
-    billing_address = FieldList(
-        FormField(
-            AddressForm,
-            label='Billing Address',
-        ),
-        min_entries=1
+    billing_address = FormField(
+        BillingAddressForm,
+        label='Billing Address',
     )
+
     delivery_address = FieldList(
         FormField(
-            AddressForm,
+            DeliveryAddressForm,
             label='Delivery Address',
         ),
        min_entries=1

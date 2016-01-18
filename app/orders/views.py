@@ -1,11 +1,12 @@
 from flask import (
-    render_template, redirect, url_for, session
+    render_template, redirect, url_for, session, request
 )
 from . import orders
 from .forms import OrderForm
 from .models import (
     save_order, get_all_orders, get_order, update_order,
-    get_new_orders_for_user, confirm_order, cancel_order
+    get_new_orders_for_user, confirm_order, cancel_order,
+    get_orders_with_query
 )
 from app.clients.models import get_all_clients
 from app.product.models import get_all_products
@@ -80,7 +81,11 @@ def edit(order_id):
 @login_required
 @orders.route('/', methods=['GET', 'POST'])
 def list():
-    orders_list = get_all_orders()
+    query = request.args.get('query')
+    if not query:
+        orders_list = get_all_orders()
+    else:
+        orders_list = get_orders_with_query(query)
 
     return render_template('orders/list.html', orders=orders_list)
 

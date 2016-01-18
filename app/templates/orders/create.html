@@ -135,49 +135,6 @@
 
 
     <script>
-        /*$client_input = $('#client').selectize({
-        valueField: 'id',
-        labelField: 'label',
-        searchField: 'name',
-        create: false,
-        options: {{ client_choices | safe}},
-        render: {
-        option: function(item, escape) {
-            return '<div>' +
-                    '<span class="title">' +
-                        '<span class="name"><i class="glyphicon glyphicon-user" style="color:#bbb;"></i> ' + escape(item.name) + ' '+ escape(item.surname) + '</span>' +
-                    '</span>' +
-                    '<ul class="meta">' +
-                        '<li class="language">ID: ' + escape(item.id) + '</li>' +
-                        '<li class="language">E-mail: ' + escape(item.email) + '</li>' +
-                        (item.phones && item.phones.length > 0 ? '<li class="language"> Phone: ' + escape(item.phones[0].phone) + '</li>' : '') +
-                    '</ul>' +
-                '</div>';
-            }
-        }
-    });
-*/
-    /*$inputs = $("select[name^='products'").selectize({
-        valueField: 'id',
-        labelField: 'name',
-        searchField: 'name',
-        create: false,
-        options: {{ product_choices | safe }},
-        render: {
-        option: function(item, escape) {
-            return '<div>' +
-                    '<span class="title">' +
-                        '<span class="name"><i class="glyphicon glyphicon-user" style="color:#bbb;"></i> ' + escape(item.name) + ' Price:'+ escape(item.string_price) + 'PLN</span>' +
-                    '</span>' +
-                    '<ul class="meta">' +
-                        '<li class="language">ID: ' + escape(item.id) + '</li>' +
-                        '<li class="language">Price: ' + escape(item.string_price) + 'PLN </li>' +
-                    '</ul>' +
-                '</div>';
-            }
-        }
-    });
-*/
     var products_choices = {{ product_choices | safe }}
     $inputs = $("select[name^='products'");
     $inputs.each(function(index, value){
