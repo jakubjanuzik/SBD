@@ -68,7 +68,6 @@ def get_all_orders():
             JOIN order_statuses s ON s.id = o.status_id
         """
     )
-    import ipdb; ipdb.set_trace()
     for order in orders:
         order_products = select('order_products', {'order_id': order.id})
         orders_list.append(
@@ -115,7 +114,7 @@ def get_orders_with_query(query):
                 id=order.id,
                 client=order.client_id,
                 status=order.status_name,
-                suam=order.sum
+                suma=order.sum
             )
         )
     return sorted(orders_list, key=lambda x: x.id)

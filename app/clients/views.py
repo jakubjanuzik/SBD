@@ -53,7 +53,7 @@ def edit(client_id):
 @login_required
 @clients.route('/', methods=['GET'])
 def list():
-    query = request.args.get('query')
+    query = request.args.get('query', '')
     if query:
         clients = get_clients_with_query(query)
     else:
@@ -61,7 +61,8 @@ def list():
 
     return render_template(
         'clients/list.html',
-        clients=clients
+        clients=clients,
+        query=query
     )
 
 

@@ -38,7 +38,7 @@ def create_product():
 @login_required
 @product.route('/', methods=['GET'])
 def list():
-    query = request.args.get('query')
+    query = request.args.get('query', '')
     if not query:
         products = run_custom_query(
             """SELECT * FROM products
@@ -47,12 +47,17 @@ def list():
         products = run_custom_query(
             """
                 SELECT * FROM products
-                WHERE (LOWER(name) LIKE '%{0}%' OR LOWER(description) LIKE '%{0}%')
+                WHERE (LOWER(name) LIKE '%{0}%'
+                    OR LOWER(description) LIKE '%{0}%')
                 AND deleted = False
             """.format(query.lower())
         )
 
-    return render_template('products/list.html', products=products)
+    return render_template(
+        'products/list.html',
+        products=products,
+        query=query
+    )
 
 
 @login_required

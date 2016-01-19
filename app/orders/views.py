@@ -52,7 +52,6 @@ def edit(order_id):
     order.client = order.client.id
     form = OrderForm(obj=order)
     if form.validate_on_submit():
-        import ipdb; ipdb.set_trace()
         update_order(order_id, form.data)
         redirect(url_for('orders.list'))
 
@@ -82,13 +81,13 @@ def edit(order_id):
 @login_required
 @orders.route('/', methods=['GET', 'POST'])
 def list():
-    query = request.args.get('query')
+    query = request.args.get('query', '')
     if not query:
         orders_list = get_all_orders()
     else:
         orders_list = get_orders_with_query(query)
 
-    return render_template('orders/list.html', orders=orders_list)
+    return render_template('orders/list.html', orders=orders_list, query=query)
 
 
 @login_required

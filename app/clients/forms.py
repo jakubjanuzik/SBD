@@ -41,7 +41,7 @@ class DeliveryAddressForm(NoCsrfForm):
                         'Missing {}!'.format(field),
                     )
             return False
-        return super().validate
+        return super().validate()
 
 
 class UserForm(Form):
