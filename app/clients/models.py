@@ -1,3 +1,6 @@
+
+from flask import g
+
 from collections import namedtuple
 
 from app import utils
@@ -14,8 +17,46 @@ def create_client(form):
     for phone in form.data['phones']:
         if phone['phone']:
             utils.insert(
-                'client_phones', {'client_id': client_id, 'phone': phone['phone']}
+                'client_phones',
+                {'client_id': client_id, 'phone': phone['phone']}
             )
+
+    if form.data['billing_address']:
+        data = form.data['billing_address']
+        address_id = utils.insert(
+            'addresses',
+            {
+                'country': data['country'],
+                'city': data['city'],
+                'street': data['street']
+            }
+        )
+        utils.insert(
+            'client_addresses',
+            {
+                'client_id': client_id,
+                'address_id': address_id,
+                'type': 'billing'
+            }
+        )
+    if form.data['delivery_address']:
+        data = form.data['delivery_address'][0]
+        address_id = utils.insert(
+            'addresses',
+            {
+                'country': data['country'],
+                'city': data['city'],
+                'street': data['street']
+            }
+        )
+        utils.insert(
+            'client_addresses',
+            {
+                'client_id': client_id,
+                'address_id': address_id,
+                'type': 'delivery'
+            }
+        )
 
 
 def edit_client(form, client_id):
@@ -78,11 +119,34 @@ def get_phones_for_client(client):
 
 
 def get_all_clients(where_params={}):
-    clients = utils.select('clients', where_params)
+    clients = utils.select('clients', where_params=where_params)
     clients_list = []
     for client in clients:
         clients_list.append(get_client(client.id))
     return clients_list
+
+
+def get_clients_with_query(query):
+    conn = getattr(g, 'db', None)
+    cursor = conn.cursor()
+
+    sql =  """
+        SELECT * FROM clients
+        WHERE LOWER(name) LIKE '%{0}%' OR
+        LOWER(surname) LIKE '%{0}%' OR
+        LOWER(email) LIKE '%{0}%'
+    """.format(query.lower())
+
+    cursor.execute(sql)
+    clients = cursor.fetchall()
+    conn.commit()
+    cursor.close()
+
+    clients_list = []
+    for client in clients:
+        clients_list.append(get_client(client.id))
+    return clients_list
+
 
 
 class Cl():

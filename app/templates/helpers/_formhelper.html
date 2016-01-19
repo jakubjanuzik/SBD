@@ -81,6 +81,11 @@
 
 {% macro render_form_field(form) -%}
     {% for f in form %}
+        {% if form.errors %}
+            {% for error in form.errors %}
+                {{ error }}
+            {% endfor %}
+        {% endif %}
         {% if f.type == 'BooleanField' %}
             {{ render_checkbox_field(f) }}
         {% elif f.type == 'RadioField' %}

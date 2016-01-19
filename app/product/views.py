@@ -1,7 +1,7 @@
 from flask import (
     render_template, redirect, url_for, request, flash, abort, jsonify
 )
-
+from psycopg2 import IntegrityError
 from . import product
 from .forms import ProductForm
 from .models import get_product_images, get_all_products
@@ -21,7 +21,11 @@ def create_product():
 
         data = form.data.copy()
         data.pop("images", None)
-        product_id = insert_into_table('product', data)
+        try:
+            product_id = insert_into_table('products', data)
+        except IntegrityError:
+            form.name.errors = ('Product with given name already exists',)
+            return render_template('products/create.html', form=form)
         images = request.files.getlist("images")
         if images:
             for image in images:
@@ -34,9 +38,19 @@ def create_product():
 @login_required
 @product.route('/', methods=['GET'])
 def list():
-    products = run_custom_query(
-        """SELECT * FROM product
-        WHERE deleted = False""")
+    query = request.args.get('query')
+    if not query:
+        products = run_custom_query(
+            """SELECT * FROM products
+            WHERE deleted = False""")
+    else:
+        products = run_custom_query(
+            """
+                SELECT * FROM products
+                WHERE (LOWER(name) LIKE '%{0}%' OR LOWER(description) LIKE '%{0}%')
+                AND deleted = False
+            """.format(query.lower())
+        )
 
     return render_template('products/list.html', products=products)
 
@@ -44,7 +58,7 @@ def list():
 @login_required
 @product.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id):
-    product = select_row_from_table_by_id("product", id)
+    product = select_row_from_table_by_id("products", id)
     try:
         product = product[0]
     except IndexError:
@@ -58,7 +72,11 @@ def edit(id):
     if form.validate_on_submit():
         data = form.data.copy()
         data.pop("images", None)
-        update("product", {"id": id}, data)
+        try:
+            update("product", {"id": id}, data)
+        except IntegrityError:
+            form.name.errors = ('Product with given name already exists',)
+            render_template('products/create.html', form=form)
         images = request.files.getlist("images")
         if images:
             for image in images:
@@ -72,11 +90,9 @@ def edit(id):
 @login_required
 @product.route('/delete/<int:id>', methods=['GET'])
 def delete(id):
-    product = select_row_from_table_by_id("product", id)
+    product = select_row_from_table_by_id("products", id)
     if product is not None:
-        run_custom_query("""UPDATE product
-            SET deleted = {}
-            WHERE id = \'{}\'""".format(True, id), fetch=False)
+        run_custom_query("""SELECT delete_product({})""".format(id), fetch=False)
         flash(
             "Succesfully deleted product {}".format(product[0].name),
             "success"

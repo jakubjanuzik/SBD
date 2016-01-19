@@ -1,11 +1,14 @@
-from flask import render_template, flash, redirect, url_for, jsonify
+from flask import (
+    render_template, flash, redirect, url_for, jsonify, request
+)
 from app.decorators import login_required
 from app.utils import run_custom_query
-
+from psycopg2 import IntegrityError
 from . import clients
 from .forms import UserForm
 from .models import (
-    create_client, get_client, edit_client, get_all_clients
+    create_client, get_client, edit_client, get_all_clients,
+    get_clients_with_query
 )
 
 
@@ -14,7 +17,15 @@ from .models import (
 def create():
     form = UserForm()
     if form.validate_on_submit():
-        create_client(form)
+        try:
+            create_client(form)
+        except IntegrityError:
+            for field in ('name', 'surname', 'email'):
+                getattr(form, field).errors = (
+                    'User with given name, surname and email already exists.',
+                )
+            return render_template('clients/create.html', form=form)
+
         return redirect(url_for('clients.list'))
     return render_template('clients/create.html', form=form)
 
@@ -26,7 +37,15 @@ def edit(client_id):
     form = UserForm(obj=client)
     if form.validate_on_submit():
         form.populate_obj(client)
-        edit_client(form, client_id)
+        try:
+            edit_client(form, client_id)
+        except IntegrityError:
+            for field in ('name', 'surname', 'email'):
+                getattr(form, field).errors = (
+                    'User with given name, surname and email already exists.',
+                )
+
+            return render_template('clients/create.html', form=form)
         return redirect(url_for('clients.list'))
     return render_template('clients/create.html', form=form)
 
@@ -34,7 +53,11 @@ def edit(client_id):
 @login_required
 @clients.route('/', methods=['GET'])
 def list():
-    clients = get_all_clients()
+    query = request.args.get('query')
+    if query:
+        clients = get_clients_with_query(query)
+    else:
+        clients = get_all_clients()
 
     return render_template(
         'clients/list.html',
@@ -51,8 +74,8 @@ def delete(client_id):
             fetch=False
         )
         return redirect(url_for('clients.list'))
-    except:
-        flash('Something went wrong. Please, contact administrator', 'error')
+    except IntegrityError:
+        flash('Client has got orders. Delete orders at first, then delete client.', 'error')
         return redirect(url_for('clients.list'))
 
 

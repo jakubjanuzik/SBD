@@ -108,6 +108,7 @@ def select(tablename, where_params={}):
                     for k in where_params)
             )
 
+    sql = sql[:-1] + ' ORDER BY ID ASC;'
     cursor.execute(sql)
     data = cursor.fetchall()
     conn.commit()
