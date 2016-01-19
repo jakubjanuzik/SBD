@@ -8,12 +8,12 @@ from flask import abort, session
 
 
 def get_initial_status():
-    data = select('order_statuses', {'status_name': 'New'})
+    data = select('order_statuses', {'id': 1})
 
     try:
         status = Status(id=data[0].id, name=data[0].status_name)
     except IndexError:
-        abort(404)
+        abort(500)
 
     return status
 
@@ -37,7 +37,6 @@ def save_order(data):
         'user_id': session.get('user')
     }
     order_id = insert('orders', data_orders)
-
     for product in data['products']:
         data_products = {
             'order_id': order_id,
@@ -60,12 +59,25 @@ def get_order(id):
 
 def get_all_orders():
     orders_list = []
-    orders = select('orders')
+    orders = run_custom_query(
+        """
+            SELECT o.*, c.name, c.surname, c.email, s.status_name,
+                sum_order(o.id) as sum
+            FROM orders o
+            JOIN clients c ON c.id = o.client_id
+            JOIN order_statuses s ON s.id = o.status_id
+        """
+    )
+    import ipdb; ipdb.set_trace()
     for order in orders:
         order_products = select('order_products', {'order_id': order.id})
-        status = select('order_statuses', {'id': order.status_id})[0]
         orders_list.append(
-           Order(order.id, order.client_id, order_products, status.status_name)
+            Order(
+                id=order.id,
+                client=order.client_id,
+                status=order.status_name,
+                suma=order.sum
+            )
         )
     return sorted(orders_list, key=lambda x: x.id)
 
@@ -74,7 +86,8 @@ def get_orders_with_query(query):
     orders_list = []
     orders = run_custom_query(
         """
-            SELECT o.*, c.name, c.surname, c.email, s.status_name
+            SELECT o.*, c.name, c.surname, c.email, s.status_name,
+                sum_order(o.id) as sum
             FROM orders o
             JOIN clients c ON c.id = o.client_id
             JOIN order_statuses s ON s.id = o.status_id
@@ -93,7 +106,7 @@ def get_orders_with_query(query):
                     LOWER(p.name) LIKE '%{0}%'
                     OR LOWER(p.description) LIKE '%{0}%'
             )
-        """.format(query)
+        """.format(query.lower())
     )
     for order in orders:
         order_products = select('order_products', {'order_id': order.id})
@@ -101,14 +114,15 @@ def get_orders_with_query(query):
             Order(
                 id=order.id,
                 client=order.client_id,
-                status=order.status_name
+                status=order.status_name,
+                suam=order.sum
             )
         )
     return sorted(orders_list, key=lambda x: x.id)
 
 
 def confirm_order(order_id):
-    confirmed_status = select('order_statuses', {'status_name': 'Confirmed'})
+    confirmed_status = select('order_statuses', {'id': 3})
     try:
         update(
             'orders',
@@ -120,7 +134,7 @@ def confirm_order(order_id):
 
 
 def cancel_order(order_id):
-    cancelled_status = select('order_statuses', {'status_name': 'Cancelled'})
+    cancelled_status = select('order_statuses', {'id': 2})
     try:
         update(
             'orders',
@@ -149,12 +163,13 @@ def update_order(order_id, data):
 
 
 class Order(object):
-    def __init__(self, id, client=None, products=None, status=None):
+    def __init__(self, id, client=None, products=None, status=None, suma=0):
         self.client = client
         self.products = products
         self.status = status
         self.order = id
         self.id = id
+        self.sum = float(suma)
 
         if type(client) is int:
             self.client = get_client(client)

@@ -6,7 +6,7 @@
             <h3 class="box-title">Create Order</h3>
         </div>
         {% call render_form(form) %}
-            <button id="AddRow">Add Product</button>
+            <a class="btn btn-info" id="AddRow">Add Product</a>
         {% endcall %}
 {% endblock %}
 
@@ -99,57 +99,130 @@
             border-bottom: 1px solid #ddd;
             display:block;
         }
+        a.delete{
+            position: absolute;
+            right: 25px;
+            margin-top: -65px;
+            padding: 3px 9px;
+            opacity: 0.5;
+            -webkit-transition: all ease 0.2s;
+            -o-transition: all ease 0.2s;
+            transition: all ease 0.2s;
+        }
+        a.delete:hover{
+            opacity: 1;
+        }
+
     </style>
 {% endblock %}
 
 
 {% block javascripts %}
     <script src="{{ url_for('static', filename='selectize/js/standalone/selectize.js') }}"></script>
-
     <script>
     (function ($) {
       $.fn.extend({
+        deleteRow: function () {
+          return this.each(function () {
+            var obj = $(this);
+
+            var $btn = $("<a>");
+            $btn.addClass("btn");
+            $btn.addClass("btn-danger");
+            $btn.addClass("delete");
+            $btn.text("X");
+
+            var $parent = obj.parent();
+            $parent.append($btn);
+
+            $btn.on("click", function(){
+                $(this).parent().next().next().remove();
+                $(this).parent().next().remove();
+                $(this).parent().remove();
+            });
+
+          }); //Close jQuery plugin
+        }
+      });
+    })(jQuery);
+    </script>
+    <script>
+
+    (function ($) {
+      $.fn.extend({
         addRows: function () {
+            var $last = $('[id ^=products-][id $=-product]').last();
+            var elem_id = $last.attr('id');
+            var elem_num = parseInt(elem_id.replace(/.*-(\d{1,4})-.*/m, '$1')) + 1;
+
+            var $container = $last.parent().parent();
+            var $product = $last.parent().clone(true, true);
+            var $price = $last.parent().next().clone(true, true);
+            var $quantity = $last.parent().next().next().clone(true, true);
+
+            var newId = $last.attr('id').replace('-' + (elem_num - 1) + '-', '-' + (elem_num) + '-');
+
             $(this).on("click", function(){
-                var $last = $('[id ^=phones-][id $=-phone]').last();
-                var elem_id = $last.attr('id');
-                var elem_num = parseInt(elem_id.replace(/.*-(\d{1,4})-.*/m, '$1')) + 1;
-                var newId = $last.attr('id').replace('-' + (elem_num - 1) + '-', '-' + (elem_num) + '-');
 
-                var $row = $last.parent().clone(true, true);
-                $row.find('label').attr('id', newId);
-                $row.find('input').attr('id', newId);
-                $row.find('input').attr('name', newId);
-                $row.find('input').val('');
+                var newId = $product.find('select').attr('id').replace('-' + (elem_num - 1) + '-', '-' + (elem_num) + '-');
 
-                $last.parent().after($row);
+                $product.find('label').attr('id', newId);
+                $product.find('input').attr('id', newId);
+                $product.find('select').attr('id', newId);
+                $product.find('select').attr('name', newId);
+                $product.find('select').trigger("change");
+
+
+                // console.log($price);
+                // debugger;
+                newId = $price.find('input').attr('id').replace('-' + (elem_num - 1) + '-', '-' + (elem_num) + '-');
+
+                $price.find('label').attr('id', newId);
+                $price.find('input').attr('id', newId);
+                $price.find('input').attr('name', newId);
+                // $price.find('input').val('');
+
+                newId = $quantity.find('input').attr('id').replace('-' + (elem_num - 1) + '-', '-' + (elem_num) + '-');
+
+                $quantity.find('label').attr('id', newId);
+                $quantity.find('input').attr('id', newId);
+                $quantity.find('input').attr('name', newId);
+                // $quantity.find('input').val('');
+
+                $container.append($product.clone());
+                $container.append($price.clone());
+                $container.append($quantity.clone());
+                elem_num++;
+                reloadBindings();
             });
         }
       });
     })(jQuery);
     </script>
     <script type="text/javascript">
-        $('[id ^=phones-][id $=-phone]').formsetHelpers();
+        $('[id ^=products-][id $=-product]').deleteRow();
         $('#AddRow').addRows();
     </script>
 
 
     <script>
-    var products_choices = {{ product_choices | safe }}
-    $inputs = $("select[name^='products'");
-    $inputs.each(function(index, value){
-        $(this).on('change', function(){
-            $input_price = $(this).parent().next().find('input');
-            $input_quantity = $(this).parent().next().next().find('input');
-            console.log($(this).val());
-            $input_price.val(products_choices[$(this).val()].price);
-            if ($input_quantity.val() == '') {
-                $input_quantity.val(1);
-            };
+    function reloadBindings(){
+        var products_choices = {{ product_choices | safe }}
+        $inputs = $("select[name^='products'");
+        $inputs.each(function(index, value){
+            $(this).on('change', function(){
+                $input_price = $(this).parent().next().find('input');
+                $input_quantity = $(this).parent().next().next().find('input');
+                console.log($(this).val());
+                $input_price.val(products_choices[$(this).val()].price);
+                if ($input_quantity.val() == '') {
+                    $input_quantity.val(1);
+                };
+            });
         });
-    });
+    }
 
-    // $client_input.selectize.setValue("{{ form.client}}")
+    reloadBindings();
 </script>
 {% endblock %}
 

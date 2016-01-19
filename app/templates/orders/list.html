@@ -23,6 +23,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Client</th>
+                                <th>Sum</th>
                                 <th>Status</th>
                                 <th>Edit</th>
                                 <th>Delete</th>
@@ -31,6 +32,7 @@
                                 <tr>
                                     <td> {{order.id}} </td>
                                     <td> Client ID: {{order.client.id}}, {{order.client.name}}</td>
+                                    <td>{{ order.sum }}</td>
                                     <td>
                                         <span class="label {% if order.status == 'Cancelled' %} label-danger {% else %} label-success {% endif %}">{{order.status}}</span>
                                     </td>

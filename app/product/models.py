@@ -21,7 +21,7 @@ def get_product_images(id):
 
 
 def get_product(id):
-    product = utils.select_one_or_404('product', {'id': id})
+    product = utils.select_one_or_404('products', {'id': id})
     images = utils.select('product_images', {'product_id': id})
 
     c = Product(
@@ -35,7 +35,7 @@ def get_product(id):
 
 
 def get_all_products(where_params={}):
-    products = utils.select('product', where_params)
+    products = utils.select('products', where_params)
     products_list = []
     for product in products:
         products_list.append(get_product(product.id))

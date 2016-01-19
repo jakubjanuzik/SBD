@@ -46,7 +46,7 @@ def list():
     else:
         products = run_custom_query(
             """
-                SELECT * FROM productss
+                SELECT * FROM products
                 WHERE (LOWER(name) LIKE '%{0}%' OR LOWER(description) LIKE '%{0}%')
                 AND deleted = False
             """.format(query.lower())
@@ -58,7 +58,7 @@ def list():
 @login_required
 @product.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id):
-    product = select_row_from_table_by_id("product", id)
+    product = select_row_from_table_by_id("products", id)
     try:
         product = product[0]
     except IndexError:
@@ -90,11 +90,9 @@ def edit(id):
 @login_required
 @product.route('/delete/<int:id>', methods=['GET'])
 def delete(id):
-    product = select_row_from_table_by_id("product", id)
+    product = select_row_from_table_by_id("products", id)
     if product is not None:
-        run_custom_query("""UPDATE product
-            SET deleted = {}
-            WHERE id = \'{}\'""".format(True, id), fetch=False)
+        run_custom_query("""SELECT delete_product({})""".format(id), fetch=False)
         flash(
             "Succesfully deleted product {}".format(product[0].name),
             "success"

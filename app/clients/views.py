@@ -53,7 +53,7 @@ def edit(client_id):
 @login_required
 @clients.route('/', methods=['GET'])
 def list():
-    query =  request.args.get('query')
+    query = request.args.get('query')
     if query:
         clients = get_clients_with_query(query)
     else:
@@ -74,8 +74,8 @@ def delete(client_id):
             fetch=False
         )
         return redirect(url_for('clients.list'))
-    except:
-        flash('Something went wrong. Please, contact administrator', 'error')
+    except IntegrityError:
+        flash('Client has got orders. Delete orders at first, then delete client.', 'error')
         return redirect(url_for('clients.list'))
 
 
