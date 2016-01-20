@@ -1,0 +1,49 @@
+{% extends "base/base.html" %}
+{% block main_content %}
+  <div class="row">
+        <div class="col-xs-12">
+            <div class="box">
+                <div class="box-header">
+                    <h3 class="box-title">Lista Twoich zamówień</h3>
+                    <div class="box-tools">
+                        <div class="input-group input-group-sm" style="width: 150px;">
+                            <input type="text" name="table_search" class="form-control pull-right" placeholder="Search">
+                            <div class="input-group-btn">
+                                <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- /.box-header -->
+                <div class="box-body table-responsive no-padding">
+                    <table class="table table-hover">
+                        <tbody>
+                            <tr>
+                                <th>ID</th>
+                                <th>Client</th>
+                                <th>Cancel</th>
+                                <th>Confirm</th>
+                            </tr>
+                            {% for order in orders %}
+                                <tr>
+                                    <td> {{order.id}} </td>
+                                    <td> Client ID: {{order.client.id}}, {{order.client.name}}</td>
+                                    <td><a href="{{url_for("orders.cancel", order_id=order.id)}}" class="btn btn-danger">Cancel</a></td>
+                                    <td><a href="{{url_for("orders.confirm", order_id=order.id)}}" class="btn btn-info">Confirm</a></td>
+                                </tr>
+                            {% else %}
+                            <tr>
+                                <td>Brak zdefiniowanych zamówień</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.box-body -->
+            </div>
+            <!-- /.box -->
+        </div>
+    </div>
+{% endblock %}
+
+

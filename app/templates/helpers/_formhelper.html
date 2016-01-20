@@ -62,7 +62,7 @@
 
 
 {% macro render_field_list(field) -%}
-    <div style="padding:5px; margin:5px; border:1px solid #ddd; background: #eee">
+    <div class="field_list" style="padding:5px; margin:5px;">
         {% for f in field.entries %}
             {% if f.type == 'BooleanField' %}
                 {{ render_checkbox_field(f) }}
@@ -81,6 +81,11 @@
 
 {% macro render_form_field(form) -%}
     {% for f in form %}
+        {% if form.errors %}
+            {% for error in form.errors %}
+                {{ error }}
+            {% endfor %}
+        {% endif %}
         {% if f.type == 'BooleanField' %}
             {{ render_checkbox_field(f) }}
         {% elif f.type == 'RadioField' %}
