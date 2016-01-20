@@ -7,7 +7,7 @@ from .models import (
 from psycopg2 import IntegrityError
 from flask import render_template, redirect, url_for
 
-IntegrityError
+
 @statuses.route('/create', methods=['GET', 'POST'])
 def create():
     form = StatusForm()
@@ -16,7 +16,7 @@ def create():
             create_status(form.data)
         except IntegrityError:
             form.status_name.errors = (
-                'Product with given name already exists',
+                'Status with given name already exists',
             )
         else:
             return redirect(url_for('statuses.list'))
