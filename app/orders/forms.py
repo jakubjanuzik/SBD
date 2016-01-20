@@ -4,10 +4,11 @@ from wtforms import (
     FieldList, FormField, SelectField, DecimalField, IntegerField
 )
 from wtforms.validators import DataRequired, NumberRange
+from app import utils
 from app.product.models import get_all_products
 from app.clients.models import get_all_clients
+from app.statuses.models import get_statuses_choices
 from .models import Product
-
 
 class NoValidateSelectField(SelectField):
 
@@ -34,9 +35,14 @@ class OrderForm(Form):
         FormField(OrderProductForm, default=lambda: Product()),
         min_entries=2
     )
+    status = SelectField(
+        'Status',
+        validators=[DataRequired()],
+    )
 
     def __init__(self, *args, **kwargs):
         super(OrderForm, self).__init__(*args, **kwargs)
         self.client.choices = [
             (item.id, item.name) for item in get_all_clients()
         ]
+        self.status.choices = get_statuses_choices()

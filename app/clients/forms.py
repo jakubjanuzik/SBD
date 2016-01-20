@@ -22,10 +22,11 @@ class BillingAddressForm(NoCsrfForm):
     )
 
 class DeliveryAddressForm(NoCsrfForm):
-    street = StringField('Street', validators=[DataRequired()])
-    city = StringField('City', validators=[DataRequired()])
+    street = StringField('Street')
+    city = StringField('City')
     country = SelectField(
-        'Country', validators=[DataRequired()], choices=[
+        'Country',
+         choices=[
             ('', '-------'),
             ('PL', 'Poland'),
         ]
@@ -33,14 +34,14 @@ class DeliveryAddressForm(NoCsrfForm):
 
     def validate(self, *args, **kwargs):
         values = self.data.values()
-        if any(values) and not all(values):
-            for field, data in self.data.items():
-                if not data:
-                    self.errors[field] = 'Missing!'
-                    getattr(self, field).errors = (
-                        'Missing {}!'.format(field),
-                    )
-            return False
+        if any(values):
+            if not all(values):
+                for field, data in self.data.items():
+                    if not data:
+                        getattr(self, field).errors = (
+                            'Missing {}!'.format(field),
+                        )
+                return False
         return super().validate()
 
 
