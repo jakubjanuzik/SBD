@@ -613,14 +613,6 @@ ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regcl
 -- Data for Name: addresses; Type: TABLE DATA; Schema: public; Owner: damian
 --
 
-COPY addresses (id, country, street, city) FROM stdin;
-1   PL  Młodojewo Parcele   Słupca
-2
-3   PL  Młodojewo Parcele   Słupca
-4
-\.
-
-
 --
 -- TOC entry 2137 (class 0 OID 0)
 -- Dependencies: 171
@@ -635,13 +627,6 @@ SELECT pg_catalog.setval('addresses_id_seq', 4, true);
 -- Dependencies: 172
 -- Data for Name: client_addresses; Type: TABLE DATA; Schema: public; Owner: damian
 --
-
-COPY client_addresses (id, client_id, address_id, type) FROM stdin;
-1   1   1   billing
-2   1   2   delivery
-3   3   3   billing
-4   3   4   delivery
-\.
 
 
 --
@@ -659,11 +644,6 @@ SELECT pg_catalog.setval('client_addresses_id_seq', 4, true);
 -- Data for Name: client_phones; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY client_phones (id, phone, client_id) FROM stdin;
-1   123 1
-2   123 3
-\.
-
 
 --
 -- TOC entry 2139 (class 0 OID 0)
@@ -680,10 +660,6 @@ SELECT pg_catalog.setval('client_phones_id_seq', 2, true);
 -- Data for Name: clients; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY clients (id, name, surname, email) FROM stdin;
-1   Damian  Blejwas damian.blejwas@gmail.com
-3   Damian2 Blejwas damian.blejwas@gmail.com
-\.
 
 
 --
@@ -700,12 +676,6 @@ SELECT pg_catalog.setval('clients_id_seq', 3, true);
 -- Dependencies: 178
 -- Data for Name: order_products; Type: TABLE DATA; Schema: public; Owner: postgres
 --
-
-COPY order_products (id, order_id, product_id, price, quantity) FROM stdin;
-3   2   2   12.1199999999999992 1
-4   2   1   12.1199999999999992 1
-\.
-
 
 --
 -- TOC entry 2141 (class 0 OID 0)
@@ -731,12 +701,6 @@ SELECT pg_catalog.setval('order_products_product_id_seq', 1, false);
 -- Data for Name: order_statuses; Type: TABLE DATA; Schema: public; Owner: damian
 --
 
-COPY order_statuses (id, status_name) FROM stdin;
-1   New
-2   Cencelled
-3   Confirmed
-\.
-
 
 --
 -- TOC entry 2143 (class 0 OID 0)
@@ -753,10 +717,6 @@ SELECT pg_catalog.setval('order_statuses_id_seq', 1, true);
 -- Data for Name: orders; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY orders (id, client_id, status_id, user_id) FROM stdin;
-2   1   3   1
-\.
-
 
 --
 -- TOC entry 2144 (class 0 OID 0)
@@ -772,12 +732,6 @@ SELECT pg_catalog.setval('orders_id_seq', 2, true);
 -- Dependencies: 185
 -- Data for Name: product_images; Type: TABLE DATA; Schema: public; Owner: postgres
 --
-
-COPY product_images (id, filename, caption, default_image, created_at, updated_at, product_id, deleted) FROM stdin;
-1   6d0a3e0e419a2a9a98395fe396698354-mini.jpg   mini.jpg    \N  2016-01-19 17:27:28.251177  2016-01-19 17:27:28.251177  1   f
-2   6b234e5e77005fd3f996656342fd554a-       \N  2016-01-19 17:51:02.066684  2016-01-19 17:51:02.066684  2   f
-\.
-
 
 --
 -- TOC entry 2145 (class 0 OID 0)
@@ -803,23 +757,12 @@ SELECT pg_catalog.setval('product_product_id_seq', 2, true);
 -- Data for Name: products; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY products (id, name, description, price, deleted, created_at, updated_at) FROM stdin;
-1   Deska   Test    12.12   f   2016-01-19 17:27:28.247533  2016-01-19 17:27:28.247533
-2   asd asdad   12.12   t   2016-01-19 17:51:02.064011  2016-01-19 17:52:32.524406
-\.
-
 
 --
 -- TOC entry 2117 (class 0 OID 57676)
 -- Dependencies: 189
 -- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
 --
-
-COPY users (id, username, password) FROM stdin;
-1   sbd b98d50c159a938723d8eb8f3039afab2
-6   sbd3    d41d8cd98f00b204e9800998ecf8427e
-4   sbd2    7815696ecbf1c96e6894b779456d330e
-\.
 
 
 --
@@ -1127,11 +1070,3 @@ REVOKE ALL ON SCHEMA public FROM PUBLIC;
 REVOKE ALL ON SCHEMA public FROM postgres;
 GRANT ALL ON SCHEMA public TO postgres;
 GRANT ALL ON SCHEMA public TO PUBLIC;
-
-
--- Completed on 2016-01-19 19:33:40 CET
-
---
--- PostgreSQL database dump complete
---
-
