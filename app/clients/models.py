@@ -84,16 +84,45 @@ def edit_client(form, client_id):
 def get_client(id):
     client = utils.select_one_or_404('clients', {'id': id})
     phones = utils.select('client_phones', {'client_id': id})
+    billing_address = utils.select(
+        'client_addresses', {'client_id': id, 'type': 'billing'}
+    )
+    delivery_address = utils.select(
+        'client_addresses', {'client_id': id, 'type': 'delivery'}
+    )
+    if billing_address:
+        billing_addr = utils.select('addresses', {'id': billing_address[0].id})
+        if billing_addr:
+            b_address = Address(billing_addr[0])
+
+    if delivery_address:
+        delivery_addr = utils.select(
+            'addresses', {'id': delivery_address[0].id}
+        )
+        if delivery_addr:
+            d_addr =  Address(delivery_addr[0])
 
     Client = namedtuple(
-        'Client', ['id', 'name', 'surname', 'email', 'phones']
+        'Client',
+        [
+            'id',
+            'name',
+            'surname',
+            'email',
+            'phones',
+            'billing_address',
+            'delivery_address'
+        ]
     )
     client = Client(
         id=client.id,
         name=client.name,
         surname=client.surname,
         email=client.email,
-        phones=[{'id': phone.id, 'phone': phone.phone} for phone in phones])
+        phones=[{'id': phone.id, 'phone': phone.phone} for phone in phones],
+        billing_address=b_address if b_address else None,
+        delivery_address=delivery_addr if delivery_addr else None
+    )
     c = Cl(client)
     return c
 
@@ -148,6 +177,12 @@ def get_clients_with_query(query):
     return clients_list
 
 
+class Address(object):
+
+    def __init__(self, record):
+        self.country = record.country
+        self.street = record.street
+        self.city = record.city
 
 class Cl():
 
@@ -160,6 +195,8 @@ class Cl():
         self.phones = [
             Ph(phone=phone['phone']) for phone in data.phones if phone
         ]
+        self.billing_address = data.billing_address
+        self.delivery_address = data.delivery_address
 
     def serialize(self):
         return {
