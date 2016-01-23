@@ -17,6 +17,7 @@ def get_initial_status():
 
     return status
 
+
 def get_new_orders_for_user(user_id):
     initial_status_pk = get_initial_status().id
     orders = select(

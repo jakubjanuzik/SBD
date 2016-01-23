@@ -118,17 +118,19 @@ def get_client(id):
     delivery_address = utils.select(
         'client_addresses', {'client_id': id, 'type': 'delivery'}
     )
+    b_address = None
     if billing_address:
         billing_addr = utils.select('addresses', {'id': billing_address[0].id})
         if billing_addr:
             b_address = Address(billing_addr[0])
 
+    d_addr = None
     if delivery_address:
         delivery_addr = utils.select(
             'addresses', {'id': delivery_address[0].id}
         )
         if delivery_addr:
-            d_addr =  Address(delivery_addr[0])
+            d_addr = Address(delivery_addr[0])
 
     Client = namedtuple(
         'Client',
@@ -148,8 +150,8 @@ def get_client(id):
         surname=client.surname,
         email=client.email,
         phones=[{'id': phone.id, 'phone': phone.phone} for phone in phones],
-        billing_address=b_address if b_address else None,
-        delivery_address=d_addr if d_addr else None
+        billing_address=b_address,
+        delivery_address=d_addr
     )
     c = Cl(client)
     return c
