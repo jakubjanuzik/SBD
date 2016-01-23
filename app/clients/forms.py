@@ -61,10 +61,7 @@ class UserForm(Form):
         label='Billing Address',
     )
 
-    delivery_address = FieldList(
-        FormField(
-            DeliveryAddressForm,
-            label='Delivery Address',
-        ),
-       min_entries=1
+    delivery_address = FormField(
+        DeliveryAddressForm,
+        label='Delivery Address',
     )

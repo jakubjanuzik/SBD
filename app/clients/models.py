@@ -40,7 +40,7 @@ def create_client(form):
             }
         )
     if form.data['delivery_address']:
-        data = form.data['delivery_address'][0]
+        data = form.data['delivery_address']
         address_id = utils.insert(
             'addresses',
             {
@@ -79,6 +79,34 @@ def edit_client(form, client_id):
                 'client_phones',
                 {'client_id': client_id, 'phone': phone['phone']}
             )
+    if form.data['billing_address']:
+        billing = utils.select('client_addresses', {'client_id': client_id, 'type': 'billing'})
+        data = form.data['billing_address']
+        utils.update(
+            'addresses',
+            {
+                'id': billing[0].id,
+            },
+            {
+                'country': data['country'],
+                'city': data['city'],
+                'street': data['street']
+            }
+        )
+    if form.data['delivery_address']:
+        delivery = utils.select('client_addresses', {'client_id': client_id, 'type': 'delivery'})
+        data = form.data['delivery_address']
+        utils.update(
+            'addresses',
+            {
+                'id': delivery[0].id,
+            },
+            {
+                'country': data['country'],
+                'city': data['city'],
+                'street': data['street']
+            }
+        )
 
 
 def get_client(id):
@@ -121,7 +149,7 @@ def get_client(id):
         email=client.email,
         phones=[{'id': phone.id, 'phone': phone.phone} for phone in phones],
         billing_address=b_address if b_address else None,
-        delivery_address=delivery_addr if delivery_addr else None
+        delivery_address=d_addr if d_addr else None
     )
     c = Cl(client)
     return c
@@ -206,7 +234,7 @@ class Cl():
             'surname': self.surname,
             'email': self.email,
             'phones': [phone.serialize() for phone in self.phones],
-            'label': 'ID: {}, {} {}'.format(self.id, self.name, self.surname)
+            'label': 'ID: {}, {} {}'.format(self.id, self.name, self.surname),
         }
 
 

@@ -36,7 +36,9 @@ def edit(client_id):
     client = get_client(client_id)
     form = UserForm(obj=client)
     if form.validate_on_submit():
-        form.populate_obj(client)
+
+        # form.populate_obj(client)
+        client = get_client(client_id)
         try:
             edit_client(form, client_id)
         except IntegrityError:

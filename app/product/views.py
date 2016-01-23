@@ -78,7 +78,7 @@ def edit(id):
         data = form.data.copy()
         data.pop("images", None)
         try:
-            update("product", {"id": id}, data)
+            update("products", {"id": id}, data)
         except IntegrityError:
             form.name.errors = ('Product with given name already exists',)
             render_template('products/create.html', form=form)

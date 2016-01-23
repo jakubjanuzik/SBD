@@ -38,7 +38,7 @@ def update(tablename, where, values):
     WHERE {};""".format(
         tablename,
         ', '.join('{}=\'{}\''.format(k, values[k]) for k in values),
-        ', '.join('{}=\'{}\''.format(k, where[k]) for k in where))
+        ' AND '.join('{}=\'{}\''.format(k, where[k]) for k in where))
     cursor.execute(sql)
     conn.commit()
     cursor.close()

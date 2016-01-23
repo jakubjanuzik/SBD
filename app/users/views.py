@@ -78,14 +78,13 @@ def edit(id):
 @users.route('/list/', methods=['GET'])
 def list():
     query = request.args.get('query', '')
-    if query is not None:
-        users = run_custom_query("""
-            SELECT * FROM users
-            WHERE username LIKE '%{}%';
-            """.format(query)
-        )
-    else:
-        users = select('users')
+
+    users = run_custom_query("""
+        SELECT * FROM users
+        WHERE username LIKE '%{}%'
+        ORDER BY id ASC;
+        """.format(query)
+    )
 
     return render_template('users/list.html', users=users, query=query)
 

@@ -25,6 +25,6 @@ class UserForm(Form):
 
     def validate(self, *args, **kwargs):
         if self._obj is not None and self.data['password'] == '' and self.data['confirm'] == '':
-            self.username.validate(form=self, *args, **kwargs)
+            return self.username.validate(form=self, *args, **kwargs)
         else:
             return super().validate()
