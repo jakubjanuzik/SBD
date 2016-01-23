@@ -17,7 +17,6 @@ def get_initial_status():
 
     return status
 
-
 def get_new_orders_for_user(user_id):
     initial_status_pk = get_initial_status().id
     orders = select(
@@ -33,9 +32,12 @@ def get_new_orders_for_user(user_id):
 def save_order(data):
     data_orders = {
         'client_id': data['client'],
-        'status_id': get_initial_status().id,
         'user_id': session.get('user')
     }
+    statuses = select('order_statuses', {'status_name': data['status']})
+    if statuses:
+        data_orders['status_id'] = statuses[0].id
+
     order_id = insert('orders', data_orders)
     for product in data['products']:
         data_products = {
@@ -148,9 +150,13 @@ def update_order(order_id, data):
     order_data = {
         'client_id': data['client'],
     }
+    statuses = select('order_statuses', {'status_name': data['status']})
+    if statuses:
+        order_data['status_id'] = statuses[0].id
     update('orders', {'id': order_id}, order_data)
 
     delete('order_products', {'order_id': order_id})
+
     for product in data['products']:
         data_products = {
             'order_id': order_id,

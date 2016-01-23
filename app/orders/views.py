@@ -53,7 +53,7 @@ def edit(order_id):
     form = OrderForm(obj=order)
     if form.validate_on_submit():
         update_order(order_id, form.data)
-        redirect(url_for('orders.list'))
+        return redirect(url_for('orders.list'))
 
     clients = get_all_clients()
     form.client.choices = [
