@@ -37,7 +37,7 @@
                                         <span class="label {% if order.status == 'Cancelled' %} label-danger {% else %} label-success {% endif %}">{{order.status}}</span>
                                     </td>
                                     <td><a href="{{url_for("orders.edit", order_id=order.id)}}" class="btn btn-warning">Edit</a></td>
-                                    <td><a href="{{url_for("orders.list", order_id=order.id)}}" class="btn btn-danger">Delete</a></td>
+                                    <td><a href="{{url_for("orders.cancel", order_id=order.id)}}" class="btn btn-danger">Delete</a></td>
                                 </tr>
                             {% else %}
                             <tr>

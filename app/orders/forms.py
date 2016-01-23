@@ -18,8 +18,8 @@ class NoValidateSelectField(SelectField):
 
 class OrderProductForm(NoCsrfForm):
     product = NoValidateSelectField('Product')
-    price = DecimalField('Price', places=2)
-    quantity = IntegerField('Quantity', validators=[NumberRange(min=0)])
+    price = DecimalField('Price', places=2, validators=[NumberRange(min=0, max=10000000000)])
+    quantity = IntegerField('Quantity', validators=[NumberRange(min=1)])
 
     def __init__(self, *args, **kwargs):
         super(OrderProductForm, self).__init__(*args, **kwargs)
@@ -33,7 +33,7 @@ class OrderForm(Form):
     client = NoValidateSelectField('Client', validators=[DataRequired()])
     products = FieldList(
         FormField(OrderProductForm, default=lambda: Product()),
-        min_entries=2
+        min_entries=1
     )
     status = SelectField(
         'Status',

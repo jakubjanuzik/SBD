@@ -64,6 +64,7 @@ def list():
 @product.route('/edit/<int:id>', methods=['GET', 'POST'])
 def edit(id):
     product = select_row_from_table_by_id("products", id)
+    images = []
     try:
         product = product[0]
     except IndexError:
